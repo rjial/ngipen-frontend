@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader({}: LoaderFunctionArgs) {
+export async function loader({ }: LoaderFunctionArgs) {
   const eventService = new IEventService();
   const res = await eventService.getEvents();
   return json(res)
@@ -35,16 +35,16 @@ const NavBar: React.FC = () => (<nav className="flex flex-row w-full justify-bet
 </nav>);
 
 type EventCardProps = {
-  title: string, 
-  desc: string, 
-  location: string, 
+  title: string,
+  desc: string,
+  location: string,
   price: string
 }
 
-const EventCard: React.FC<EventCardProps> = ({title, desc, location, price}: EventCardProps) => (<Card className="w-72">
-  <img src="https://source.unsplash.com/JNuKyKXLh8U" alt="Card Image" className="w-full rounded-t-lg" />
+const EventCard: React.FC<EventCardProps> = ({ title, desc, location, price }: EventCardProps) => (<Card className="w-72">
+  <img src="https://source.unsplash.com/JNuKyKXLh8U" alt="Card Image" className="w-full h-64 object-cover rounded-t-lg" />
   <CardHeader>
-    <CardTitle>{title }</CardTitle>
+    <CardTitle>{title}</CardTitle>
   </CardHeader>
   <CardContent>
     <span>{desc}</span>
@@ -56,27 +56,30 @@ const EventCard: React.FC<EventCardProps> = ({title, desc, location, price}: Eve
 </Card>);
 
 const PopularEvent: React.FC = () => {
-  const {data} = useLoaderData<typeof loader>()
+  const res = useLoaderData<typeof loader>()
   return (<div className="space-y-3">
-  <span className="font-semibold text-xl">Popular Events</span>
-  <div className="grid grid-cols-4 gap-4">
-    <Suspense fallback={<LoaderCircle className={cn('my-28 h-16 w-16 text-primary/60 animate-spin')}/>}>
-      <Await resolve={data}>
-        {data?.map(eventItem => (
+    <span className="font-semibold text-xl">Popular Events</span>
+    <div className="grid grid-cols-4 gap-4">
+      <Suspense fallback={<LoaderCircle className={cn('my-28 h-16 w-16 text-primary/60 animate-spin')} />}>
+        <Await resolve={res}>
+          {/* {data?.map(eventItem => (
           <EventCard title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} />
-        ))}
-      </Await>
-    </Suspense>
-  </div>
-</div>)
+        ))} */}
+          {(res) => res.data?.map(eventItem => (
+            <EventCard title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} />
+          ))}
+        </Await>
+      </Suspense>
+    </div>
+  </div>)
 };
 
 export default function Index() {
-  
+
   return (
     <div className="px-24">
       <NavBar />
-      <PopularEvent/>
+      <PopularEvent />
     </div>
   );
 }
