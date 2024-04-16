@@ -32,6 +32,9 @@ dependencies:
   isbot:
     specifier: ^4.1.0
     version: 4.4.0
+  lucide:
+    specifier: ^0.368.0
+    version: 0.368.0
   lucide-react:
     specifier: ^0.365.0
     version: 0.365.0(react@18.2.0)
@@ -4018,6 +4021,10 @@ packages:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /lucide@0.368.0:
+    resolution: {integrity: sha512-Sy3hnnGZ8N83j+tsupoWTK6zGElpXpDJwfh58jlCwhdFx0ONWrDUn0nfw/alP1GM04CY4Z1Cm5KrI2RuuBXGAg==}
     dev: false
 
   /markdown-extensions@1.1.1:

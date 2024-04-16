@@ -4,7 +4,7 @@ import { Response } from "~/data/entity/Response";
 import { LoginResponse } from "~/data/entity/auth/LoginResponse";
 import { HttpClient } from "~/service/HttpClient";
 
-export class AuthService extends HttpClient {
+export class IAuthService extends HttpClient {
     public async login({email, password}: LoginRequest): Promise<Response<LoginResponse>> {
         const instance = this.createInstance();
         const res = instance.post<Response<LoginResponse>>(`/auth/login`, {email: email, password: password})
