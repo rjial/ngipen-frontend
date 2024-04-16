@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { LoginRequest } from "~/data/dto/auth/LoginRequest";
 import { Response } from "~/data/entity/Response";
-import { LoginResponse } from "~/data/entity/auth/LoginResponse";
+import { LoginResponse } from "~/data/dto/auth/LoginResponse";
 import { HttpClient } from "~/service/HttpClient";
 
 export class IAuthService extends HttpClient {
