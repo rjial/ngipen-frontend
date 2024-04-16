@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Link } from "lucide-react";
+import { Link } from "@remix-run/react";
+import { Search } from "lucide-react";
 
 export const NavBar: React.FC = () => (<nav className="flex flex-row w-full justify-between py-4">
   <div className="flex flex-row items-center space-x-4">
