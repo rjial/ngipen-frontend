@@ -68,7 +68,7 @@ export default function LoginPage() {
             <div className="hidden md:block background-event h-screen w-full"></div>
             <div className="flex relative flex-row items-center">
                 <div className="absolute top-8 left-8">
-                    <Link to="/" className="flex flex-row space-x-4 hover:border-b hover:border-black py-2"><ArrowLeft /><span> Back To Home</span></Link>
+                    <Link to="/" className="flex flex-row space-x-4 hover:border-b hover:border-black py-2"><ArrowLeft /><span className="hidden md:block"> Back To Home</span></Link>
                 </div>
                 <div className="w-full flex flex-col justify-center">
                     <div className="px-10 md:px-36 space-y-6">
