@@ -6,7 +6,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-r
 import { Form, Link, useActionData, useRouteError } from "@remix-run/react";
 import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
 import { useEffect } from "react";
-import { LoginRequest } from "~/data/dto/auth/LoginRequest";
+import { LoginRequest, LoginRequestValidation } from "~/data/dto/auth/LoginRequest";
 import { RegisterRequestValidation } from "~/data/dto/auth/RegisterRequest";
 import { IAuthService } from "~/service/auth/IAuthService.server";
 import { createAuthSession, getAuthSession, getAuthToken } from "~/utils/authUtil";
@@ -26,17 +26,20 @@ export async function action({request}: ActionFunctionArgs) {
             return redirect("/");
         }
         // const validation = RegisterRequestValidation.parse(data)
-        const res = await authService.login(data)
+        const validation = LoginRequestValidation.safeParse(Object.fromEntries(formData))
+        if (!validation.success) return json({error: true, message: "Invalid request", validation: validation.error.format()})
+        const res = await authService.login(validation.data)
         if (res.status_code == 200) {
             // @ts-ignore
             const login = await createAuthSession(request, res.data?.token)
             return login
+        } else {
+            return json({error: true, message: res.message, validation: undefined})
         }
-        return json(res);
         
     } catch(err) {
         // @ts-ignore
-        throw new Error(`Failed : ${err.message}`)
+        return json({error: true, message: err.message, validation: undefined})
     }
 }
 
@@ -54,9 +57,7 @@ export default function LoginPage() {
     const {toast} = useToast()
     useEffect(() => {
         if(res != undefined) {
-            if (res.status_code == 200) {
-                toast({title: res?.message})
-            } else {
+            if (res.error) {
                 toast({title: res?.message, variant: "destructive"})
             }
         }
@@ -81,6 +82,7 @@ export default function LoginPage() {
                                     placeholder="m@example.com"
                                     required
                                 />
+                                {res?.validation && res.validation.email && <span className="text-[0.8rem] text-red-400">{res.validation.email._errors[0]}</span>}
                             </div>
                             <div className="grid gap-2">
                                 <div className="flex items-center">
@@ -93,6 +95,7 @@ export default function LoginPage() {
                                     </Link>
                                 </div>
                                 <Input id="password" type="password" name="password" required />
+                                {res?.validation && res.validation.password && <span className="text-[0.8rem] text-red-400">{res.validation.password._errors[0]}</span>}
                             </div>
                             <Button type="submit" className="w-full">
                                 Login

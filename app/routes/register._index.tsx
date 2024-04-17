@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
-import { RegisterRequest } from "~/data/dto/auth/RegisterRequest";
+import { RegisterRequest, RegisterRequestValidation } from "~/data/dto/auth/RegisterRequest";
 import { RegisterResponse } from "~/data/dto/auth/RegisterResponse";
 import { Response } from "~/data/entity/Response";
 import { IAuthService } from "~/service/auth/IAuthService.server";
@@ -24,17 +24,18 @@ export async function action({ request }: ActionFunctionArgs) {
         address: formData.get("address")?.toString() as string
     }
     try {
-        const res = await authService.register(data)
-        console.log(res as Response<RegisterResponse>)
+        const validation = await RegisterRequestValidation.safeParse(Object.fromEntries(formData))
+        if (!validation.success) return json({error: true, message: "Invalid request", validation: validation.error.format()})
+        const res = await authService.register(validation.data)
         if (res.status_code == 200) {
             return redirect("/login")
             // return json(res)
         } else {
-            return json(res)
+            return json({error: true, message: res.message, validation: undefined})
         }
     } catch (err) {
         // @ts-ignore
-        return json({message: err.message})
+        return json({error: true, message: err.message, validation: undefined})
     }
 }
 
@@ -51,7 +52,7 @@ export default function RegisterPage() {
     const res = useActionData<typeof action>()
     useEffect(() => {
         if (res !== undefined) {
-            toast({ title: res.message })
+            if (res.error) toast({ title: res.message, variant: "destructive" })
         }
     }, [res])
     return (
@@ -74,6 +75,7 @@ export default function RegisterPage() {
                                     placeholder="John Doe"
                                     required
                                 />
+                                {res?.validation && res.validation.name && <span className="text-[0.8rem] text-red-400">{res.validation.name._errors[0]}</span>}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -84,12 +86,14 @@ export default function RegisterPage() {
                                     placeholder="m@example.com"
                                     required
                                 />
+                                {res?.validation && res.validation.email && <span className="text-[0.8rem] text-red-400">{res.validation.email._errors[0]}</span>}
                             </div>
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
                                 </div>
                                 <Input id="password" type="password" name="password" required />
+                                {res?.validation && res.validation.password && <span className="text-[0.8rem] text-red-400">{res.validation.password._errors[0]}</span>}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="nohp">No Handphone</Label>
@@ -100,6 +104,7 @@ export default function RegisterPage() {
                                     placeholder="08188888888"
                                     required
                                 />
+                                {res?.validation && res.validation.hp && <span className="text-[0.8rem] text-red-400">{res.validation.hp._errors[0]}</span>}
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="address">Alamat</Label>
@@ -110,6 +115,7 @@ export default function RegisterPage() {
                                     placeholder="Jl. Kenangan No. 666"
                                     required
                                 />
+                                {res?.validation && res.validation.address && <span className="text-[0.8rem] text-red-400">{res.validation.address._errors[0]}</span>}
                             </div>
                             <Button type="submit" className="w-full">
                                 Register
