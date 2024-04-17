@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useRouteError } from "@remix-run/react";
 import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
+import { ArrowLeft } from "lucide-react";
 import { useEffect } from "react";
 import { LoginRequest, LoginRequestValidation } from "~/data/dto/auth/LoginRequest";
 import { RegisterRequestValidation } from "~/data/dto/auth/RegisterRequest";
@@ -65,7 +66,10 @@ export default function LoginPage() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 w-screen h-screen">
             <div className="hidden md:block background-event h-screen w-full"></div>
-            <div className="flex flex-row items-center">
+            <div className="flex relative flex-row items-center">
+                <div className="absolute top-8 left-8">
+                    <Link to="/" className="flex flex-row space-x-4 hover:border-b hover:border-black py-2"><ArrowLeft /><span> Back To Home</span></Link>
+                </div>
                 <div className="w-full flex flex-col justify-center">
                     <div className="px-10 md:px-36 space-y-6">
                         <div className="flex flex-col space-y-2 text-center">
