@@ -3,6 +3,9 @@ export class LoginResponse {
         email: string,
         token: string
     ) {
-
+        this.email = email
+        this.token = token
     }
+    email: string
+    token: string
 }

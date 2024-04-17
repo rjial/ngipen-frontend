@@ -9,7 +9,7 @@ type SessionFlashData = {
   };
   
 
-const {getSession, commitSession, destroySession} = createCookieSessionStorage<SessionData, SessionFlashData>({
+export const sessionStorage = createCookieSessionStorage<SessionData, SessionFlashData>({
     cookie: {
         name: "__ngipenSession",
         httpOnly: true,
@@ -21,4 +21,4 @@ const {getSession, commitSession, destroySession} = createCookieSessionStorage<S
     }
 })
 
-export {getSession, commitSession, destroySession}
+export const {getSession, commitSession, destroySession} = sessionStorage

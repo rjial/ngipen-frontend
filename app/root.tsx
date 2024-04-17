@@ -7,6 +7,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 import globalStylesheet from "~/globals.css";
 import '@fontsource-variable/inter/wght.css';
@@ -34,6 +35,28 @@ export default function App() {
         <Scripts />
         <LiveReload />
         <Toaster/>
+      </body>
+    </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body className="w-screen h-screen flex flex-col justify-center items-center space-y-3">
+        {/* add the UI you want your users to see */}
+        {/* @ts-ignore */}
+        <span className="text-4xl font-bold">{error?.status}</span>
+        {/* @ts-ignore */}
+        <span className="text-xl font-semibold">{error?.data}</span>
+        <Scripts />
       </body>
     </html>
   );

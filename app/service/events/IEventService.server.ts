@@ -8,11 +8,11 @@ import { FetchClient } from "../FetchClient.server";
 export class IEventService implements EventService {
     async getEvents(): Promise<Response<Event[]>> {
         const fetchClient = new FetchClient()
-        return fetchClient.get<Response<Event[]>>("/event")
+        return fetchClient.get<Event[]>("/event")
     }
     async getEvent(uuid: string): Promise<Response<Event>> {
         const fetchClient = new FetchClient()
-        return fetchClient.get<Response<Event>>(`/event/${uuid}`)
+        return fetchClient.get<Event>(`/event/${uuid}`)
     }
 
 }

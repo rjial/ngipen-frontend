@@ -1,14 +1,14 @@
 export class Response<T> {
     constructor(
         message: string,
-        statusCode: number,
+        status_code: number,
         data?: T
     ) {
         this.message =  message;
-        this.statusCode = statusCode;
+        this.status_code = status_code;
         this.data = data
     }
     message: string;
-    statusCode: number;
+    status_code: number;
     data?: T
 }
