@@ -19,7 +19,14 @@ export const NavBar: React.FC = () => {
       <Link to="/">FAQ</Link>
       <Separator orientation="vertical" />
       {
-        user === undefined ? <Button asChild><Link to="/register">Daftar</Link></Button> : (
+        user === undefined ? (<>
+          <Button asChild variant="outline">
+            <Link to="/login">Masuk</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/register">Daftar</Link>
+          </Button>
+        </>) : (
           <DropdownMenu>
             <DropdownMenuTrigger>{user.data.name}</DropdownMenuTrigger>
             <DropdownMenuContent>
