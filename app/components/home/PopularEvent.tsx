@@ -14,8 +14,8 @@ export const PopularEvent: React.FC = () => {
         <div className="grid grid-cols-4 gap-4">
             <Suspense fallback={<LoaderCircle className={cn('my-28 h-16 w-16 text-primary/60 animate-spin')} />}>
                 <Await resolve={events}>
-                    {(events) => events?.map(eventItem => (
-                        <EventCard title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} />
+                    {(events) => events?.map((eventItem, index) => (
+                        <EventCard key={eventItem.uuid} title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} />
                     ))}
                 </Await>
             </Suspense>
