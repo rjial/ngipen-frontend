@@ -28,16 +28,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const eventService = new IEventService();
   const res = await eventService.getEvents();
   const events: Event[] = res.data as Event[]
+  console.log(events)
   return json({ events })
 }
 
 export default function Index() {
-  // const { user } = useLoaderData<typeof loader>()
+  const { events } = useLoaderData<typeof loader>()
   return (
-    <div className="px-24 space-y-3">
+    <div className="px-24 space-y-10">
       <NavBar />
       <ImageGallery />
-      <PopularEvent />
+      <PopularEvent events={events} />
     </div>
   );
 }
