@@ -1,5 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -7,20 +7,28 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  json,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import globalStylesheet from "~/globals.css";
 import '@fontsource-variable/inter/wght.css';
 import { Toaster } from "@/components/ui/toaster";
+import { getUserClaim } from "./utils/authUtil";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: globalStylesheet },
 ];
 
-
+export async function loader({request}: LoaderFunctionArgs) {
+  const user = await getUserClaim(request)
+  console.log(user)
+  return json({user})
+}
 
 export default function App() {
+  const data = useLoaderData<typeof loader>()
   return (
     <html lang="en">
       <head>
@@ -30,7 +38,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Outlet context={data}/>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

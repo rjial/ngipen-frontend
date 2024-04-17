@@ -1,6 +1,6 @@
 
 import { json, TypedResponse, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useOutletContext } from "@remix-run/react";
 import { NavBar } from "~/components/common/Navbar";
 import { PopularEvent } from "~/components/home/PopularEvent";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
@@ -27,17 +27,15 @@ export interface IndexPageLoaderType {
 export async function loader({ request }: LoaderFunctionArgs) {
   const eventService = new IEventService();
   const res = await eventService.getEvents();
-  const user = await getUserClaim(request)
-  console.log(user)
   const events: Event[] = res.data as Event[]
-  return json({ events, user })
+  return json({ events })
 }
 
 export default function Index() {
-  const { user } = useLoaderData<typeof loader>()
+  // const { user } = useLoaderData<typeof loader>()
   return (
     <div className="px-24 space-y-3">
-      <NavBar user={user} />
+      <NavBar />
       <ImageGallery />
       <PopularEvent />
     </div>
