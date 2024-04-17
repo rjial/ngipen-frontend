@@ -2,7 +2,7 @@
 import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { NavBar } from "~/components/common/Navbar";
 import { PopularEvent } from "~/components/home/PopularEvent";
-import { IEventService } from "~/service/events/IEventService";
+import { IEventService } from "~/service/events/IEventService.server";
 
 export const meta: MetaFunction = () => {
   return [

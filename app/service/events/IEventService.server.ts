@@ -3,7 +3,7 @@ import { Event } from "~/data/entity/events/Event";
 import { EventService } from "./EventService";
 import { AxiosInstance } from "axios";
 import { HttpClient } from "../HttpClient";
-import { FetchClient } from "../FetchClient";
+import { FetchClient } from "../FetchClient.server";
 
 export class IEventService implements EventService {
     async getEvents(): Promise<Response<Event[]>> {

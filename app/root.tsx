@@ -9,11 +9,15 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import globalStylesheet from "~/globals.css";
+import '@fontsource-variable/inter/wght.css';
+import { Toaster } from "@/components/ui/toaster";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: globalStylesheet },
 ];
+
+
 
 export default function App() {
   return (
@@ -29,6 +33,7 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Toaster/>
       </body>
     </html>
   );
