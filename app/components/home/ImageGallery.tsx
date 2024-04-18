@@ -22,6 +22,6 @@ export const ImageGallery: React.FC = () => (<Carousel className="w-full max-w-f
         </CarouselItem>
       ))}
     </CarouselContent>
-    <CarouselPrevious />
-    <CarouselNext />
+    <CarouselPrevious className="left-11" />
+    <CarouselNext className="right-11"/>
   </Carousel>);
