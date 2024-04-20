@@ -1,6 +1,6 @@
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useActionData, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
 import { Calendar, CalendarIcon, MapPin, Minus, Plus, Slash } from "lucide-react";
 import { NavBar } from "~/components/common/Navbar";
 import { IEventService } from "~/service/events/IEventService.server";
@@ -10,6 +10,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useMemo, useState } from "react";
 import { JenisTiket, JenisTiketCount } from "~/data/entity/events/JenisTiket";
 import { Button } from "@/components/ui/button";
+import { IOrderService } from "~/service/order/IOrderService";
+import invariant from 'tiny-invariant'
+import { OrderDataRequest, OrderItemRequest } from "~/data/dto/order/OrderRequest";
+import { handleDate } from "~/utils/dateUtil";
+import { useToast } from "@/components/ui/use-toast";
 
 export const loader = async ({params}: LoaderFunctionArgs) =>{
     try {
@@ -33,15 +38,28 @@ export const loader = async ({params}: LoaderFunctionArgs) =>{
     }
 }
 
-export const action = async ({}: ActionFunctionArgs) => {
-    return json({})
+export const action = async ({request, params}: ActionFunctionArgs) => {
+    try {
+        const uuid = params.uuid || ""
+        const orderService = new IOrderService(request)
+        const data = await request.json() as OrderDataRequest
+        const res = await orderService.order({uuid: uuid}, {orders: data.orders})
+        if (res.status_code == 200) {
+            return json({error: false, message: "", data: res})
+        } else {
+            return json({error: true, message: res.message, data: {}})
+        }
+    } catch(err) {
+        // @ts-ignore
+        return json({error: true, message: err.message, data: {}})
+    }
 }
 
 export default function EventItemPage() {
+    const actionData = useActionData<typeof action>()
+    const submit = useSubmit()
+    const toast = useToast()
     const {event, jenisTiket} = useLoaderData<typeof loader>()
-    const handleDate = (date: string) => {
-        return dayjs(date, 'YYYY-MM-DD').format("dddd, DD MMMM YYYY")
-    }
     const [showBuyButton, setShowBuyButton] = useState(false)
     const [jenisTiketCount, setJenisTiketCount] = useState(jenisTiket?.map(item => new JenisTiketCount(item)))
     const handleIncrementCount = (id: number) => {
@@ -76,6 +94,14 @@ export default function EventItemPage() {
     const handleClear = () => {
         setJenisTiketCount(jenisTiket?.map(item => new JenisTiketCount(item)))
     }
+    const handleSubmitBeli = (data: JenisTiketCount[]) => {
+        const newData = data.map<OrderItemRequest>((item) => {
+            return {total: item.count, jenisTiket: item.jenistiket}
+        })
+        // @ts-ignore
+        submit({orders: newData}, { method: "POST", encType: "application/json" })
+        handleClear()
+    }
     const [total, setTotal] = useState(0)
     useMemo(() => {
         const finalData = jenisTiketCount?.map(item => {
@@ -87,10 +113,6 @@ export default function EventItemPage() {
     }, [jenisTiketCount, jenisTiket])
     useEffect(() => {
         const sumCount = jenisTiketCount?.reduce((countLast, item) => countLast + item.count, 0) || 0
-        // console.log(jenisTiketCount?.reduce((countLast, item) => {
-        //     const data = jenisTiket?.find(tiket => tiket.id == item.jenistiket) as JenisTiket
-        //     return countLast + data.harga
-        // }, 0))
         if (sumCount > 0) {
             setShowBuyButton(true)
         } else {
@@ -98,8 +120,10 @@ export default function EventItemPage() {
         }
     }, [jenisTiketCount])
     useEffect(() => {
-        if (showBuyButton) console.log("show")
-    }, [showBuyButton])
+        if (actionData != undefined) {
+            if(actionData.error) toast.toast({title: actionData.message, variant: "destructive"})
+        }
+    }, [actionData])
     return (
         <div className="px-24 space-y-4">
             <NavBar />
@@ -155,18 +179,15 @@ export default function EventItemPage() {
                 )}) : <span>Loading</span>}
             </div>
             { showBuyButton ?
-            <div className="w-full">
-                <Card className="flex justify-between p-6 items-center">
+                <div className="w-full">
+                    <Card className="flex justify-between p-6 items-center">
                         <span className="font-semibold text-xl">Rp {total}</span>
                         <div className="flex space-x-3">
                             <Button variant="secondary" onClick={() => handleClear()}>Clear</Button>
-                            <Button>Beli</Button>
+                            <Button onClick={() => handleSubmitBeli(jenisTiketCount || [])}>Beli</Button>
                         </div>
-                    {/* <CardContent className="flex justify-between">
-                    </CardContent> */}
-                </Card>
-
-            </div> : <></>}
+                    </Card>
+                </div> : <></>}
             <div  className="pt-8">
                 <p className="text-justify">{event?.desc}</p>
             </div>

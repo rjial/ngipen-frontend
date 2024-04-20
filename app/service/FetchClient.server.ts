@@ -1,5 +1,6 @@
 import { Response } from "~/data/entity/Response";
 import { getSession } from "~/sessions";
+import { getAuthToken } from "~/utils/authUtil";
 
 export class FetchClient {
     private getURL = (resource: string) => {
@@ -8,9 +9,9 @@ export class FetchClient {
     private getHeader = async (request: Request | undefined): Promise<Headers> => {
         const header = new Headers()
         header.set('Content-Type', 'application/json')
-        if (request !== undefined) {
-            const token = await getSession(request.headers.get("Cookies"));
-            header.append("Authorization", `Bearer ${token.get("jwtToken")}`)
+        if (request instanceof Request) {
+            const token = await getAuthToken(request);
+            if (token !== undefined) header.append("Authorization", `Bearer ${token}`)
         }
         return header
     }
