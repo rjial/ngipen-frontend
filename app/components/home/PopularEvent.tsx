@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useLoaderData, Await } from "@remix-run/react";
+import { useLoaderData, Await, Link } from "@remix-run/react";
 import { LoaderCircle } from "lucide-react";
 import { Suspense } from "react";
 import { loader } from "~/routes/_index";
@@ -18,7 +18,7 @@ export const PopularEvent: React.FC<PopularEventProp> = ({events}: PopularEventP
             <Suspense fallback={<LoaderCircle className={cn('my-28 h-16 w-16 text-primary/60 animate-spin')} />}>
                 <Await resolve={events}>
                     {(events) => events?.map((eventItem: Event, index: number) => (
-                        <EventCard key={eventItem.uuid} title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} />
+                        <Link to={`/event/${eventItem.uuid}`}><EventCard key={eventItem.uuid} title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} /></Link>
                     ))}
                 </Await>
             </Suspense>

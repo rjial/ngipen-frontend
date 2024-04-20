@@ -5,10 +5,10 @@ export interface Event {
     desc: string;
     persen: number;
     verifyEvent: boolean;
-    pemegangEvent: PemegangEvent;
-    tanggalAwal: Date;
-    waktuAwal: string;
-    waktuAkhir: string;
+    pemegangEvent: string;
+    tanggal_awal: string;
+    waktu_awal: string;
+    waktu_akhir: string;
 }
 
 export interface PemegangEvent {
