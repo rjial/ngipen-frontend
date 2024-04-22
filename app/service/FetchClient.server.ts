@@ -43,8 +43,10 @@ export class FetchClient {
 
     async put<T, DTOType>(resource: string, body?: DTOType, request?: Request | undefined, config?: RequestInit | undefined): Promise<Response<T>> {
         try {
+            console.log(body, "payload put")
             const response = await fetch(this.getURL(resource), { ...config, headers: await this.getHeader(request), method: "PUT", body: JSON.stringify(body) })
             const data = await response.json()
+            console.log(data, "data put")
             return new Response<T>(data.message, data.status_code, data.data)
         } catch (exc) {
             console.error(exc)

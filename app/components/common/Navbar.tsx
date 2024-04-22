@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Link, useOutletContext } from "@remix-run/react";
-import { Search } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
 import { Separator } from "@/components/ui/separator";
 
 export const NavBar: React.FC = () => {
-  const {user} = useOutletContext<{user: UserClaim | undefined}>()
+  const {user, checkoutCount} = useOutletContext<{user: UserClaim | undefined, checkoutCount: number}>()
   return (<nav className="flex flex-row w-full justify-between py-4">
     <div className="flex flex-row items-center space-x-4">
       <p className="font-semibold px-6">Ngipen</p>
@@ -27,15 +27,21 @@ export const NavBar: React.FC = () => {
             <Link to="/register">Daftar</Link>
           </Button>
         </>) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger>{user.data.name}</DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
-              <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex space-x-2 items-center">
+            <div className="relative">
+              {checkoutCount > 0 ? <div className="absolute top-0 right-0 text-xs leading-none rounded-full py-1 px-1.5 bg-black text-white translate-x-1 -translate-y-1">{checkoutCount}</div> : <></>}
+              <Link to="/checkout"><ShoppingCart size={28}/></Link>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger><Button variant="link">{user.data.name}</Button></DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+                <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       }
 

@@ -15,6 +15,7 @@ import globalStylesheet from "~/globals.css";
 import '@fontsource-variable/inter/wght.css';
 import { Toaster } from "@/components/ui/toaster";
 import { getUserClaim } from "./utils/authUtil";
+import { ICheckoutService } from "./service/checkout/ICheckoutService";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -23,8 +24,13 @@ export const links: LinksFunction = () => [
 
 export async function loader({request}: LoaderFunctionArgs) {
   const user = await getUserClaim(request)
-  console.log(user)
-  return json({user})
+  let checkoutCount = 0
+  if (user !== undefined) {
+    const checkoutService = new ICheckoutService()
+    const checkoutRes = await checkoutService.getCheckouts({request})
+    checkoutCount = (checkoutRes.data || []).length
+  }
+  return json({user, checkoutCount})
 }
 
 export default function App() {
