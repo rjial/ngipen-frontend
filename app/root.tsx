@@ -16,6 +16,7 @@ import '@fontsource-variable/inter/wght.css';
 import { Toaster } from "@/components/ui/toaster";
 import { getUserClaim } from "./utils/authUtil";
 import { ICheckoutService } from "./service/checkout/ICheckoutService";
+import { ExternalScripts } from 'remix-utils/external-scripts'
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -46,6 +47,7 @@ export default function App() {
       <body>
         <Outlet context={data}/>
         <ScrollRestoration />
+        <ExternalScripts/>
         <Scripts />
         <LiveReload />
         <Toaster/>

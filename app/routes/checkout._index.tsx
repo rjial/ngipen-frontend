@@ -11,6 +11,10 @@ import { ToastAction } from "@radix-ui/react-toast";
 import { Minus, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { IPaymentService } from "~/service/payment/IPaymentService";
+import { PaymentRequest } from "~/data/dto/payment/PaymentRequest";
+import { ExternalScriptsHandle } from "remix-utils/external-scripts";
+import { PaymentResponse as NgipenPaymentResponse, isPaymentResponse } from "~/data/dto/payment/PaymentResponse";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const checkoutService = new ICheckoutService()
@@ -31,6 +35,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 export const action = async ({request}: ActionFunctionArgs) => {
     // console.log(await request.json(), request.method)
     const checkoutService = new ICheckoutService()
+    const paymentService = new IPaymentService()
     try {
         const data = await request.json()
         if (data.key == "update-checkout") {
@@ -39,6 +44,18 @@ export const action = async ({request}: ActionFunctionArgs) => {
             if (res.status_code == 200) {
                 console.log(res)
                 return json({error: false, message: res.message, data: {} as Checkout[]})
+            } else {
+                return json({error: true, message: res.message, data: {}})
+            }
+        } else if(data.key == "payment") {
+            console.log(data)
+            const dataPayment: PaymentRequest = {
+                orders: data.data
+            }
+            const res = await paymentService.payment({data: dataPayment, request})
+            if (res.status_code == 200) {
+                console.log(res)
+                return json({error: false, message: res.message, data: res.data})
             } else {
                 return json({error: true, message: res.message, data: {}})
             }
@@ -58,22 +75,51 @@ export default function CheckoutPage() {
     const revalidate = useRevalidator()
     const [checkoutData, setCheckoutData] = useState<Checkout[] | undefined>(loaderData.data)
     const [totalCost, setTotalCost] = useState(0)
-    const updateFetcher = useFetcher({key: "update-checkout"})
+    const snapScriptRef = useRef<HTMLScriptElement>()
+    const updateFetcher = useFetcher<{error: boolean, message: string, data: Checkout[] | NgipenPaymentResponse}>({key: "update-checkout"})
     // useMemo(() => {
 
     // })
     const handleCountChange = async (data: {uuid: string, total: number}) => {
         updateFetcher.submit({key: "update-checkout",data: data}, {method: "POST", encType: "application/json"})
     }
+    const handlePayment = (uuids: string[]) => {
+        updateFetcher.submit({key: "payment", data: uuids}, {method: "POST", encType: "application/json"})
+    }
 
     useEffect(() => {
         loaderData.error && toast({title: loaderData.message, variant: loaderData.error ? "destructive": "default", action: loaderData.error ? <ToastAction altText="Try Again" onClick={() => revalidate.revalidate()}>Try Again</ToastAction> : <></>})
     }, [loaderData])
     useEffect(() => {
-        if (actionData != undefined) {
-            toast({title: actionData.message})
+        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
+        if (snapScriptRef.current == undefined) {
+            snapScriptRef.current = document.createElement('script');
+            snapScriptRef.current.src = midtransScriptUrl
         }
-    }, [actionData])
+        snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
+        document.body.appendChild(snapScriptRef.current)
+
+        return () => {
+            if (snapScriptRef.current != undefined) {
+                document.body.removeChild(snapScriptRef.current)
+                snapScriptRef.current = undefined
+            }
+        }
+    }, [])
+    useEffect(() => {
+        if (updateFetcher.data != undefined) {
+            if (updateFetcher.data.error) {
+                toast({title: updateFetcher.data.message, variant: "destructive"})
+            } else {
+                if (isPaymentResponse(updateFetcher.data.data)) {
+                    // @ts-ignore
+                    snap.pay(updateFetcher.data.data.snap_token)
+                    console.log(updateFetcher.data.data)
+                }
+            }
+        } 
+        
+    }, [updateFetcher.data])
     return (
         <div className="px-24 space-y-4">
             <NavBar />
@@ -133,7 +179,7 @@ export default function CheckoutPage() {
                                 <div>Total</div>
                                 <div>Rp {loaderData.data && loaderData.data.length > 0 ? loaderData.data?.reduce((countLast, item) => countLast + (item.jenisTiket.harga * item.total), 0) : 0}</div>
                             </div>
-                            <Button className="w-full">Beli Sekarang</Button>
+                            <Button disabled={(loaderData.data || []).length <= 0} onClick={() => handlePayment(loaderData.data?.map<string>(item => item.uuid) || [])} className="w-full">Beli Sekarang</Button>
                          </CardContent>
                     </Card>
                 </div>
