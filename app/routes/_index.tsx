@@ -19,11 +19,6 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export interface IndexPageLoaderType {
-  events: TypedResponse<Event[]>,
-  user: TypedResponse<UserClaim | undefined>
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const eventService = new IEventService();
   const res = await eventService.getEvents();
