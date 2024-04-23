@@ -95,7 +95,7 @@ export default function EventItemPage() {
         setJenisTiketCount(jenisTiket?.map(item => new JenisTiketCount(item)))
     }
     const handleSubmitBeli = (data: JenisTiketCount[]) => {
-        const newData = data.map<OrderItemRequest>((item) => {
+        const newData = data.filter(item => item.count > 0).map<OrderItemRequest>((item) => {
             return {total: item.count, jenisTiket: item.jenistiket}
         })
         // @ts-ignore
