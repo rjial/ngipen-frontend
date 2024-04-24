@@ -5,6 +5,10 @@ import {TicketService} from "./TicketService"
 import { FetchClient } from "../FetchClient.server";
 
 export class ITicketService implements TicketService {
+    getTiket(data: { uuid: string; request: Request; }): Promise<Response<Tiket>> {
+        const fetchClient = new FetchClient();
+        return fetchClient.get<Tiket>(`/tiket/${data.uuid}`, data.request)
+    }
     getTickets(data: { page: number, size: number, request: Request; }): Promise<Response<Page<Tiket>>> {
         const fetchClient = new FetchClient();
         return fetchClient.get<Page<Tiket>>(`/tiket?page=${data.page}&size=${data.size}`, data.request)

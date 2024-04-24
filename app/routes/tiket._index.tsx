@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { Calendar, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import { NavBar } from "~/components/common/Navbar";
@@ -72,8 +72,8 @@ export default function TiketPage() {
                                 <Separator className="my-4" />
                             </CardContent>
                             <CardFooter>
-                                <Button size="sm" variant="outline">
-                                    View Details
+                                <Button size="sm" variant="outline" asChild>
+                                    <Link to={`/tiket/${ticketItem.uuid}`}>View Details</Link>
                                 </Button>
                             </CardFooter>
                         </Card>
