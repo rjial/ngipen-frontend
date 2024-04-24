@@ -1,11 +1,11 @@
 import { User } from "~/data/entity/auth/User";
 export interface PaymentResponse {
-    paymentTransaction: PaymentTransaction;
+    paymentTransaction: PaymentTransactionAfterCheckoutResponse;
     snap_token: string;
     client_key: string;
 }
 
-export interface PaymentTransaction {
+export interface PaymentTransactionAfterCheckoutResponse {
     uuid: string;
     total: number;
     date: string;

@@ -38,6 +38,7 @@ export const NavBar: React.FC = () => {
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+                <Link to="/payment-transaction"><DropdownMenuItem>Payment Transaction</DropdownMenuItem></Link>
                 <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
               </DropdownMenuContent>
             </DropdownMenu>
