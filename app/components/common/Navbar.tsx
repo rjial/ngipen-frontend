@@ -39,6 +39,7 @@ export const NavBar: React.FC = () => {
                 <DropdownMenuSeparator />
                 <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
                 <Link to="/payment-transaction"><DropdownMenuItem>Payment Transaction</DropdownMenuItem></Link>
+                <Link to="/tiket"><DropdownMenuItem>Ticket</DropdownMenuItem></Link>
                 <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
               </DropdownMenuContent>
             </DropdownMenu>
