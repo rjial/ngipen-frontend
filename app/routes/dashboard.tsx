@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { SheetTrigger, SheetContent, Sheet } from "@/components/ui/sheet"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Link, Outlet, useOutletContext } from "@remix-run/react"
+import { Link, NavLink, Outlet, useOutletContext } from "@remix-run/react"
 import { PropsWithChildren, useState } from "react"
 import { NavBar, NavbarUser } from "~/components/common/Navbar"
 import { UserClaim } from "~/data/entity/auth/UserClaim"
@@ -50,20 +50,20 @@ const DashboardMenuCollapsible: React.FC<PropsWithChildren<DashboardMenuCollapsi
 type DashboardMenuItem = {
     title: string,
     icon: JSX.Element,
-    isActive: boolean
+    to: string
 }
 
-const DashboardMenuItem: React.FC<PropsWithChildren<DashboardMenuItem>> = ({ title, icon, children, isActive }: PropsWithChildren<DashboardMenuItem>) => {
+const DashboardMenuItem: React.FC<PropsWithChildren<DashboardMenuItem>> = ({ title, icon, children, to }: PropsWithChildren<DashboardMenuItem>) => {
     return (
         <div>
-            <Link
-                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
-                to="#"
+            <NavLink
+                className={({isActive}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
+                to={to}
             >
                 {icon}
                 {title}
 
-            </Link>
+            </NavLink>
             {children}
         </div>
     )
@@ -73,15 +73,15 @@ const DashboardMenu: React.FC = () => {
     return (
         <div className="flex-1 overflow-auto py-2">
             <nav className="grid items-start px-4 text-sm font-medium">
-                <DashboardMenuItem title="Home" icon={<Home size={16} />} isActive={false} />
-                <DashboardMenuItem title="Users" icon={<User size={16} />} isActive={true} />
-                <DashboardMenuItem title="Product" icon={<Package size={16} />} isActive={false}>
+                <DashboardMenuItem title="Home" icon={<Home size={16} />} to="/dashboard" />
+                <DashboardMenuItem title="Users" icon={<User size={16} />} to="/dashboard/user" />
+                {/* <DashboardMenuItem title="Product" icon={<Package size={16} />} to="/dashboard/">
                     <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
                         <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" />
                     </DashboardMenuCollapsible>
-                </DashboardMenuItem>
-                <DashboardMenuItem title="Orders" icon={<ShoppingCart size={16} />} isActive={false} />
-                <DashboardMenuItem title="Settings" icon={<Settings size={16} />} isActive={false} />
+                </DashboardMenuItem> */}
+                {/* <DashboardMenuItem title="Orders" icon={<ShoppingCart size={16} />} to="/dashboard/" /> */}
+                <DashboardMenuItem title="Settings" icon={<Settings size={16} />} to="/dashboard/setting" />
             </nav>
         </div>
     )
