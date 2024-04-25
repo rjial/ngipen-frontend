@@ -8,9 +8,10 @@ import { Separator } from "@/components/ui/separator";
 
 export const NavbarUser: React.FC<{
   user: UserClaim | undefined;
-}> = ({ user }) => (<DropdownMenu>
+  side?: "top" | "right" | "bottom" | "left" | undefined
+}> = ({ user, side = "bottom" }) => (<DropdownMenu>
   <DropdownMenuTrigger><Button variant="link">{user?.data.name}</Button></DropdownMenuTrigger>
-  <DropdownMenuContent>
+  <DropdownMenuContent side={side}>
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
     <DropdownMenuSeparator />
     <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>

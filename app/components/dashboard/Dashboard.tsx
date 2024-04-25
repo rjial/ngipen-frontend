@@ -110,6 +110,7 @@ export const DashboardMobileSheetItem: React.FC<PropsWithChildren<DashboardMobil
 
 export const useDashboardMobileSheet = () => {
     const [openSheet, setOpenSheet] = useState(false)
+    const { user } = useOutletContext<{ user: UserClaim | undefined, checkoutCount: number }>()
     const component: React.FC = () => {
         return (
             <Sheet open={openSheet} onOpenChange={(openedSheet) => setOpenSheet(openedSheet)}>
@@ -129,6 +130,9 @@ export const useDashboardMobileSheet = () => {
                                     <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" to="/dashboard/package" />
                                 </DashboardMenuCollapsible> */}
                                 <DashboardMobileSheetItem title="Settings" to="/dashboard/setting" icon={<Settings size={16} />} />
+                                <div className="flex items-center">
+                                    <NavbarUser user={user} />
+                                </div>
                             </nav>
                         </div>
                     </div>
@@ -143,25 +147,28 @@ export const DashboardHeader: React.FC<{
     handleSheet: () => void;
 }> = ({ handleSheet }) => {
     const { user } = useOutletContext<{ user: UserClaim | undefined, checkoutCount: number }>()
-    return (<header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-        <Button className="lg:hidden" size="icon" variant="outline" onClick={() => handleSheet()}>
-            <Menu size={16} />
-            <span className="sr-only">Toggle navigation menu</span>
-        </Button>
-        <div className="flex-1">
-            <form className="ml-auto flex-1 sm:flex-initial">
-                <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 text-gray-500 dark:text-gray-400" />
-                    <Input
-                        className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
-                        placeholder="Search orders..."
-                        type="search"
-                    />
+    return (
+        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+            <Button className="lg:hidden" size="icon" variant="outline" onClick={() => handleSheet()}>
+                <Menu size={16} />
+                <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+            <div className="flex-1 flex justify-between">
+                <form className="ml-auto flex-1">
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-2.5 text-gray-500 dark:text-gray-400" />
+                        <Input
+                            className="pl-8 sm:w-full md:w-full lg:w-96 bg-white"
+                            placeholder="Search orders..."
+                            type="search"
+                        />
+                    </div>
+                </form>
+                <div className="hidden sm:flex md:flex lg:flex items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+                    <NavbarUser user={user} />
                 </div>
-            </form>
-        </div>
-        <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-            <NavbarUser user={user} />
-        </div>
-    </header>)
+            </div>
+
+        </header>
+    )
 };
