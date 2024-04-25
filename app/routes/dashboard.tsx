@@ -139,8 +139,34 @@ const useDashboardMobileSheet = () => {
     return { handleSheet: () => setOpenSheet(!openSheet), DashboardMobileSheet: component }
 }
 
-export default function DashboardLayout() {
+const DashboardHeader: React.FC<{
+    handleSheet: () => void;
+}> = ({ handleSheet }) => {
     const { user } = useOutletContext<{ user: UserClaim | undefined, checkoutCount: number }>()
+    return (<header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
+        <Button className="lg:hidden" size="icon" variant="outline" onClick={() => handleSheet()}>
+            <Menu size={16} />
+            <span className="sr-only">Toggle navigation menu</span>
+        </Button>
+        <div className="flex-1">
+            <form className="ml-auto flex-1 sm:flex-initial">
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 text-gray-500 dark:text-gray-400" />
+                    <Input
+                        className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
+                        placeholder="Search orders..."
+                        type="search"
+                    />
+                </div>
+            </form>
+        </div>
+        <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+            <NavbarUser user={user} />
+        </div>
+    </header>)
+};
+
+export default function DashboardLayout() {
     const { handleSheet, DashboardMobileSheet } = useDashboardMobileSheet()
     return (
         <div className="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr]">
@@ -148,7 +174,6 @@ export default function DashboardLayout() {
                 <div className="flex h-full max-h-screen flex-col gap-2">
                     <div className="flex h-[60px] items-center border-b px-6">
                         <Link className="flex items-center gap-2 font-semibold" to="#">
-                            <Package2 size={16} />
                             <span className="">Ngipen</span>
                         </Link>
                         <Button className="ml-auto h-8 w-8" size="icon" variant="outline">
@@ -160,28 +185,7 @@ export default function DashboardLayout() {
                 </div>
             </div>
             <div className="flex flex-col">
-                <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-                    <Button className="lg:hidden" size="icon" variant="outline" onClick={() => handleSheet()}>
-                        <Menu size={16} />
-                        <span className="sr-only">Toggle navigation menu</span>
-                    </Button>
-                    <div className="flex-1">
-                        <h1 className="font-semibold text-lg">Overview</h1>
-                    </div>
-                    <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                        <form className="ml-auto flex-1 sm:flex-initial">
-                            <div className="relative">
-                                <Search className="absolute left-2.5 top-2.5 text-gray-500 dark:text-gray-400" />
-                                <Input
-                                    className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] bg-white"
-                                    placeholder="Search orders..."
-                                    type="search"
-                                />
-                            </div>
-                        </form>
-                        <NavbarUser user={user} />
-                    </div>
-                </header>
+                <DashboardHeader handleSheet={handleSheet} />
                 <DashboardMobileSheet />
                 <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
                     <Outlet />
