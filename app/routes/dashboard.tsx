@@ -57,7 +57,7 @@ const DashboardMenuItem: React.FC<PropsWithChildren<DashboardMenuItem>> = ({ tit
     return (
         <div>
             <NavLink
-                className={({isActive}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
+                className={({ isActive }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
                 to={to}
             >
                 {icon}
@@ -87,65 +87,54 @@ const DashboardMenu: React.FC = () => {
     )
 };
 
+type DashboardMobileSheetItem = {
+    to: string,
+    icon: JSX.Element,
+    title: string
+}
+
+const DashboardMobileSheetItem: React.FC<PropsWithChildren<DashboardMobileSheetItem>> = ({ to, icon, children, title }: PropsWithChildren<DashboardMobileSheetItem>) => (
+    <div>
+        <NavLink
+            className={({ isActive }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
+            to={to}
+        >
+            {icon}
+            {title}
+
+        </NavLink>
+        {children}
+    </div>
+);
+
 const useDashboardMobileSheet = () => {
     const [openSheet, setOpenSheet] = useState(false)
     const component: React.FC = () => {
-        return (<Sheet open={openSheet} onOpenChange={(openedSheet) => setOpenSheet(openedSheet)}>
-            <SheetContent side="left">
-                <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-[60px] items-center border-b px-6">
-                        <Link className="flex items-center gap-2 font-semibold" to="#">
-                            <Package2 size={16} />
-                            <span className="">Acme Inc</span>
-                        </Link>
-                    </div>
-                    <div className="flex-1 overflow-auto py-2">
-                        <nav className="grid items-start px-4 text-sm font-medium">
-                            <Link
-                                className="flex items-center gap-3 rounded-lg bg-gray-100 px-3 py-2 text-gray-900  transition-all hover:text-gray-900 dark:bg-gray-800 dark:text-gray-50 dark:hover:text-gray-50"
-                                to="#"
-                            >
-                                <Home size={16} />
-                                Home
+        return (
+            <Sheet open={openSheet} onOpenChange={(openedSheet) => setOpenSheet(openedSheet)}>
+                <SheetContent side="left">
+                    <div className="flex h-full max-h-screen flex-col gap-2">
+                        <div className="flex h-[60px] items-center border-b px-6">
+                            <Link className="flex items-center gap-2 font-semibold" to="#">
+                                <Package2 size={16} />
+                                <span className="">Acme Inc</span>
                             </Link>
-                            <Link
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                                to="#"
-                            >
-                                <User size={16} />
-                                Users
-                            </Link>
-                            <div className="grid gap-2">
-                                <Link
-                                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                                    to="#"
-                                >
-                                    <Package size={16}/>
-                                    Products
-                                </Link>
+                        </div>
+                        <div className="flex-1 overflow-auto py-2">
+                            <nav className="grid items-start px-4 text-sm font-medium">
+                                <DashboardMobileSheetItem title="Home" to="/dashboard" icon={<Home size={16} />} />
+                                <DashboardMobileSheetItem title="Users" to="/dashboard/user" icon={<User size={16} />} />
+                                <DashboardMobileSheetItem title="Products" to="/dashboard/user" icon={<Package size={16} />} />
                                 <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
                                     <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" />
                                 </DashboardMenuCollapsible>
-                            </div>
-                            <Link
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                                to="#"
-                            >
-                                <ShoppingCart size={16} />
-                                Orders
-                            </Link>
-                            <Link
-                                className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-                                to="#"
-                            >
-                                <Settings size={16}/>
-                                Settings
-                            </Link>
-                        </nav>
+                                <DashboardMobileSheetItem title="Settings" to="/dashboard/setting" icon={<Settings size={16} />} />
+                            </nav>
+                        </div>
                     </div>
-                </div>
-            </SheetContent>
-        </Sheet>)
+                </SheetContent>
+            </Sheet>
+        )
     };
     return { handleSheet: () => setOpenSheet(!openSheet), DashboardMobileSheet: component }
 }
