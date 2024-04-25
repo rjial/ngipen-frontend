@@ -16,17 +16,18 @@ export type DashboardMenuCollapsibleProp = {
 
 export type DashboardMenuCollapsibleItemProp = {
     title: string,
-    icon: JSX.Element
+    icon: JSX.Element,
+    to: string
 }
 
-export const DashboardMenuCollapsibleItem: React.FC<DashboardMenuCollapsibleItemProp> = ({ icon, title }: DashboardMenuCollapsibleItemProp) => (<div className="grid gap-2 px-6">
-    <Link
+export const DashboardMenuCollapsibleItem: React.FC<DashboardMenuCollapsibleItemProp> = ({ icon, title, to }: DashboardMenuCollapsibleItemProp) => (<div className="grid gap-2 px-6">
+    <NavLink
         className="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50"
-        to="#"
+        to={to}
     >
         {icon}
         {title}
-    </Link>
+    </NavLink>
 </div>);
 
 export const DashboardMenuCollapsible: React.FC<PropsWithChildren<DashboardMenuCollapsibleProp>> = (props: PropsWithChildren<DashboardMenuCollapsibleProp>) => {
@@ -57,6 +58,7 @@ export const DashboardMenuItem: React.FC<PropsWithChildren<DashboardMenuItem>> =
             <NavLink
                 className={({ isActive }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
                 to={to}
+                end
             >
                 {icon}
                 {title}
@@ -96,6 +98,7 @@ export const DashboardMobileSheetItem: React.FC<PropsWithChildren<DashboardMobil
         <NavLink
             className={({ isActive }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
             to={to}
+            end
         >
             {icon}
             {title}
@@ -114,18 +117,17 @@ export const useDashboardMobileSheet = () => {
                     <div className="flex h-full max-h-screen flex-col gap-2">
                         <div className="flex h-[60px] items-center border-b px-6">
                             <Link className="flex items-center gap-2 font-semibold" to="#">
-                                <Package2 size={16} />
-                                <span className="">Acme Inc</span>
+                                <span className="">Ngipen</span>
                             </Link>
                         </div>
                         <div className="flex-1 overflow-auto py-2">
                             <nav className="grid items-start px-4 text-sm font-medium">
                                 <DashboardMobileSheetItem title="Home" to="/dashboard" icon={<Home size={16} />} />
                                 <DashboardMobileSheetItem title="Users" to="/dashboard/user" icon={<User size={16} />} />
-                                <DashboardMobileSheetItem title="Products" to="/dashboard/user" icon={<Package size={16} />} />
-                                <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
-                                    <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" />
-                                </DashboardMenuCollapsible>
+                                {/* <DashboardMobileSheetItem title="Products" to="/dashboard/user" icon={<Package size={16} />} /> */}
+                                {/* <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
+                                    <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" to="/dashboard/package" />
+                                </DashboardMenuCollapsible> */}
                                 <DashboardMobileSheetItem title="Settings" to="/dashboard/setting" icon={<Settings size={16} />} />
                             </nav>
                         </div>
