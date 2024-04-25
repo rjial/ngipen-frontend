@@ -87,13 +87,13 @@ const DashboardMenu: React.FC = () => {
     )
 };
 
-type DashboardMobileSheetItem = {
+type DashboardMobileSheetItemProp = {
     to: string,
     icon: JSX.Element,
     title: string
 }
 
-const DashboardMobileSheetItem: React.FC<PropsWithChildren<DashboardMobileSheetItem>> = ({ to, icon, children, title }: PropsWithChildren<DashboardMobileSheetItem>) => (
+const DashboardMobileSheetItem: React.FC<PropsWithChildren<DashboardMobileSheetItemProp>> = ({ to, icon, children, title }: PropsWithChildren<DashboardMobileSheetItemProp>) => (
     <div>
         <NavLink
             className={({ isActive }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-gray-900  dark:hover:text-gray-50", isActive ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50" : "text-gray-500 dark:text-gray-400")}
