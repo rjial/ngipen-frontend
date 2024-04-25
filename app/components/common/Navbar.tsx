@@ -6,6 +6,20 @@ import { Search, ShoppingCart } from "lucide-react";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
 import { Separator } from "@/components/ui/separator";
 
+export const NavbarUser: React.FC<{
+  user: UserClaim | undefined;
+}> = ({ user }) => (<DropdownMenu>
+  <DropdownMenuTrigger><Button variant="link">{user?.data.name}</Button></DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
+    <Link to="/payment-transaction"><DropdownMenuItem>Payment Transaction</DropdownMenuItem></Link>
+    <Link to="/tiket"><DropdownMenuItem>Ticket</DropdownMenuItem></Link>
+    <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
+  </DropdownMenuContent>
+</DropdownMenu>);
+
 export const NavBar: React.FC = () => {
   const {user, checkoutCount} = useOutletContext<{user: UserClaim | undefined, checkoutCount: number}>()
   return (<nav className="flex flex-row w-full justify-between py-4">
@@ -32,17 +46,7 @@ export const NavBar: React.FC = () => {
               {checkoutCount > 0 ? <div className="absolute top-0 right-0 text-xs leading-none rounded-full py-1 px-1.5 bg-black text-white translate-x-1 -translate-y-1">{checkoutCount}</div> : <></>}
               <Link to="/checkout"><ShoppingCart size={28}/></Link>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger><Button variant="link">{user.data.name}</Button></DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
-                <Link to="/payment-transaction"><DropdownMenuItem>Payment Transaction</DropdownMenuItem></Link>
-                <Link to="/tiket"><DropdownMenuItem>Ticket</DropdownMenuItem></Link>
-                <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavbarUser user={user} />
           </div>
         )
       }
