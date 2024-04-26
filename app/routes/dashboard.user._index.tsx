@@ -195,9 +195,9 @@ export default function DashboardUserPage() {
                     <span className="md:hidden">Showing 1-5 of 100</span>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline">Previous</Button>
+                    <Button variant="outline" disabled={dataRes.first}>Previous</Button>
                     {[...Array(dataRes.totalPages).keys()].map((item) => <Button asChild variant={(Number(page || 0)) == item ? "default" : "outline"}><Link to={`/dashboard/user?page=${item}`}>{item + 1}</Link></Button>)}
-                    <Button variant="outline">Next</Button>
+                    <Button variant="outline" disabled={dataRes.last}>Next</Button>
                 </div>
             </div>}
         </div>
