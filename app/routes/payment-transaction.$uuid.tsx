@@ -4,12 +4,14 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { json, TypedResponse, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
+import { json, TypedResponse, type LoaderFunctionArgs, type MetaFunction, redirect } from "@remix-run/node";
 import { Link, useLoaderData, useOutletContext } from "@remix-run/react";
 import { CircleIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { NavBar } from "~/components/common/Navbar";
 import { IPaymentService } from "~/service/payment/IPaymentService";
+import { destroySession } from "~/sessions";
+import { getAuthSession } from "~/utils/authUtil";
 
 export const meta: MetaFunction = () => {
     return [
@@ -24,6 +26,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     // const paymentService = new IPaymentService()
     const res = await paymentService.getPayment({uuid: paymentTransactionUUID, request: request })
     // console.log(res)
+    if(res.status_code == 401) {
+        const session = await getAuthSession(request)
+        return redirect("/login", {
+            headers: {
+                "Set-Cookie": await destroySession(session)
+            }
+        })
+    }
     return json({ error: res.status_code == 200, message: res.message, data: res })
 }
 

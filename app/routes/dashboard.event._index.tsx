@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,6 +13,8 @@ import { Page } from "~/data/entity/common/Page";
 import { Event } from "~/data/entity/events/Event";
 import { IEventService } from "~/service/events/IEventService.server";
 import { IUserService } from "~/service/user/IUserService";
+import { destroySession } from "~/sessions";
+import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
 import { levelName } from "~/utils/levelUtil";
 
@@ -25,6 +27,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         const res = await eventService.getEvents(page, size, request)
         if (res.status_code == 200) {
             return json({ error: false, message: res.message, data: res.data })
+        } else if(res.status_code == 401) {
+            const session = await getAuthSession(request)
+            return redirect("/login", {
+                headers: {
+                    "Set-Cookie": await destroySession(session)
+                }
+            })
         } else {
             return json({ error: true, message: res.message, data: undefined })
         }

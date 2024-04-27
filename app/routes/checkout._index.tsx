@@ -1,7 +1,7 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { useActionData, useFetcher, useLoaderData, useOutletContext, useRevalidator } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
@@ -15,6 +15,8 @@ import { IPaymentService } from "~/service/payment/IPaymentService";
 import { PaymentRequest } from "~/data/dto/payment/PaymentRequest";
 import { ExternalScriptsHandle } from "remix-utils/external-scripts";
 import { PaymentResponse as NgipenPaymentResponse, isPaymentResponse } from "~/data/dto/payment/PaymentResponse";
+import { getAuthSession } from "~/utils/authUtil";
+import { destroySession } from "~/sessions";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const checkoutService = new ICheckoutService()
@@ -44,6 +46,13 @@ export const action = async ({request}: ActionFunctionArgs) => {
             if (res.status_code == 200) {
                 console.log(res)
                 return json({error: false, message: res.message, data: {} as Checkout[]})
+            } else if(res.status_code == 401) {
+                const session = await getAuthSession(request)
+                return redirect("/login", {
+                    headers: {
+                        "Set-Cookie": await destroySession(session)
+                    }
+                })
             } else {
                 return json({error: true, message: res.message, data: {}})
             }
@@ -56,6 +65,13 @@ export const action = async ({request}: ActionFunctionArgs) => {
             if (res.status_code == 200) {
                 console.log(res)
                 return json({error: false, message: res.message, data: res.data})
+            } else if(res.status_code == 401) {
+                const session = await getAuthSession(request)
+                return redirect("/login", {
+                    headers: {
+                        "Set-Cookie": await destroySession(session)
+                    }
+                })
             } else {
                 return json({error: true, message: res.message, data: {}})
             }

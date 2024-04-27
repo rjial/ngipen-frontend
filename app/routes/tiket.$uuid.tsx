@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Calendar, MapPin } from "lucide-react";
 import { useEffect } from "react";
@@ -11,6 +11,8 @@ import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 import { ITicketService } from "~/service/ticket/ITicketService";
+import { destroySession } from "~/sessions";
+import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -20,6 +22,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         const res = await ticketService.getTiket({ uuid: uuidTicket, request: request })
         if (res.status_code == 200) {
             return json({ error: false, message: res.message, data: res.data })
+        } else if(res.status_code == 401) {
+            const session = await getAuthSession(request)
+            return redirect("/login", {
+                headers: {
+                    "Set-Cookie": await destroySession(session)
+                }
+            })
         } else {
             return json({ error: true, message: res.message, data: res.data })
         }

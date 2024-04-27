@@ -7,10 +7,13 @@ import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Calendar, MapPin } from "lucide-react";
 import { useEffect } from "react";
+import { redirect } from "remix-typedjson";
 import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 import { ITicketService } from "~/service/ticket/ITicketService";
+import { destroySession } from "~/sessions";
+import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
@@ -19,6 +22,13 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
         const res = await ticketService.getTickets({page: 0, size: 10, request: request})
         if (res.status_code == 200) {
             return json({error: false, message: res.message, data: res.data})
+        } else if(res.status_code == 401) {
+            const session = await getAuthSession(request)
+            return redirect("/login", {
+                headers: {
+                    "Set-Cookie": await destroySession(session)
+                }
+            })
         } else {
             return json({error: true, message: res.message, data: res.data})
         }

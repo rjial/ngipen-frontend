@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useLoaderData, useLocation } from "@remix-run/react";
 import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { useEffect } from "react";
@@ -14,6 +14,8 @@ import { Event } from "~/data/entity/events/Event";
 import { JenisTiket } from "~/data/entity/events/JenisTiket";
 import { IEventService } from "~/service/events/IEventService.server";
 import { IUserService } from "~/service/user/IUserService";
+import { destroySession } from "~/sessions";
+import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
 import { levelName } from "~/utils/levelUtil";
 
@@ -25,6 +27,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         const jenisTiketRes = await eventService.getJenisTiket(eventRes.data?.uuid!)
         if (eventRes.status_code == 200) {
             return json({ error: false, message: eventRes.message, data: {event: eventRes.data, jenisTiket: jenisTiketRes.data} })
+        } else if(eventRes.status_code == 401) {
+            const session = await getAuthSession(request)
+            return redirect("/login", {
+                headers: {
+                    "Set-Cookie": await destroySession(session)
+                }
+            })
         } else {
             return json({ error: true, message: eventRes.message, data: undefined })
         }
