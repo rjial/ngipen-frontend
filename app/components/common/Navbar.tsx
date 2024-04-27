@@ -17,6 +17,7 @@ export const NavbarUser: React.FC<{
     <Link to="/"><DropdownMenuItem>Profile</DropdownMenuItem></Link>
     <Link to="/payment-transaction"><DropdownMenuItem>Payment Transaction</DropdownMenuItem></Link>
     <Link to="/tiket"><DropdownMenuItem>Ticket</DropdownMenuItem></Link>
+    {user && (user.data.level == "ADMIN" || user.data.level == "PEMEGANG_ACARA") ? <Link to="/dashboard"><DropdownMenuItem>Dashboard</DropdownMenuItem></Link> : ""}
     <Link to="/logout"><DropdownMenuItem>Logout</DropdownMenuItem></Link>
   </DropdownMenuContent>
 </DropdownMenu>);
