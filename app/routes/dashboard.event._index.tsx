@@ -41,16 +41,15 @@ export default function DashboardEventPage() {
     const fetcher = useFetcher<{error: boolean, message: string, data: Page<Event> | undefined}>()
     const dataRes: Page<Event> | undefined = data.data || undefined
     const [initialData, setInitialData] = useState<Page<Event>>(data.data || [])
-    // const { toast } = useToast()
-    // useEffect(() => {
-    //     console.log(data)
-    //     console.log([...Array(dataRes?.totalPages)])
-    //     if (data != undefined) {
-    //         toast({ title: data.message, variant: data.error ? "destructive" : "default" })
-    //     }
-    // }, [data])
+    const { toast } = useToast()
+    useEffect(() => {
+        if (data != undefined) {
+            toast({ title: data.message, variant: data.error ? "destructive" : "default" })
+        }
+    }, [data])
     useEffect(() => {
         if (fetcher.data != undefined) {
+            toast({ title: fetcher.data.message, variant: fetcher.data.error ? "destructive" : "default" })
             setInitialData(fetcher.data?.data as Page<Event>)
         }
     }, [fetcher.data])
