@@ -3,7 +3,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { Link, NavLink, useOutletContext } from "@remix-run/react";
-import { ChevronRight, Home, Menu, Package, Package2, Search, Settings, User } from "lucide-react";
+import { CalendarClock, ChevronRight, Home, Menu, Package, Package2, Search, Settings, User } from "lucide-react";
 import { PropsWithChildren, useState } from "react";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
 import { NavbarUser } from "../common/Navbar";
@@ -75,6 +75,7 @@ export const DashboardMenu: React.FC = () => {
             <nav className="grid items-start px-4 text-sm font-medium">
                 <DashboardMenuItem title="Home" icon={<Home size={16} />} to="/dashboard" />
                 <DashboardMenuItem title="Users" icon={<User size={16} />} to="/dashboard/user" />
+                <DashboardMenuItem title="Events" icon={<CalendarClock size={16} />} to="/dashboard/event" />
                 {/* <DashboardMenuItem title="Product" icon={<Package size={16} />} to="/dashboard/">
                     <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
                         <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" />
@@ -125,6 +126,7 @@ export const useDashboardMobileSheet = () => {
                             <nav className="grid items-start px-4 text-sm font-medium">
                                 <DashboardMobileSheetItem title="Home" to="/dashboard" icon={<Home size={16} />} />
                                 <DashboardMobileSheetItem title="Users" to="/dashboard/user" icon={<User size={16} />} />
+                                <DashboardMobileSheetItem title="Events" to="/dashboard/event" icon={<CalendarClock size={16} />} />
                                 {/* <DashboardMobileSheetItem title="Products" to="/dashboard/user" icon={<Package size={16} />} /> */}
                                 {/* <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
                                     <DashboardMenuCollapsibleItem icon={<Package size={16} />} title="All Products" to="/dashboard/package" />
