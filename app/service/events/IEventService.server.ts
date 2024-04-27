@@ -16,9 +16,9 @@ export class IEventService implements EventService {
         const fetchClient = new FetchClient()
         return fetchClient.get<Page<Event>>(`/event?page=${page}&size=${size}`, request)
     }
-    async getEvent(uuid: string): Promise<Response<Event>> {
+    async getEvent(uuid: string, request?: Request): Promise<Response<Event>> {
         const fetchClient = new FetchClient()
-        return fetchClient.get<Event>(`/event/${uuid}`)
+        return fetchClient.get<Event>(`/event/${uuid}`, request)
     }
 
 }
