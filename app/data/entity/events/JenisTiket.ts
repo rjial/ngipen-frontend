@@ -1,7 +1,8 @@
 export type JenisTiket = {
-    id: number,
-    nama: string,
+    id: number
+    nama: string
     harga: number
+    event: string
 }
 
 export class JenisTiketCount {

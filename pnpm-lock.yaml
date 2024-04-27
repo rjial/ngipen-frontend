@@ -8,6 +8,15 @@ dependencies:
   '@fontsource-variable/inter':
     specifier: ^5.0.17
     version: 5.0.17
+  '@maskito/core':
+    specifier: ^2.3.1
+    version: 2.3.1
+  '@maskito/kit':
+    specifier: ^2.3.1
+    version: 2.3.1(@maskito/core@2.3.1)
+  '@maskito/react':
+    specifier: ^2.3.1
+    version: 2.3.1(@maskito/core@2.3.1)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-avatar':
     specifier: ^1.0.4
     version: 1.0.4(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
@@ -23,6 +32,9 @@ dependencies:
   '@radix-ui/react-label':
     specifier: ^2.0.2
     version: 2.0.2(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-radio-group':
+    specifier: ^1.1.3
+    version: 1.1.3(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-select':
     specifier: ^2.0.0
     version: 2.0.0(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
@@ -98,6 +110,9 @@ dependencies:
   tiny-invariant:
     specifier: ^1.3.3
     version: 1.3.3
+  use-mask-input:
+    specifier: ^3.3.7
+    version: 3.3.7(react-dom@18.2.0)(react@18.2.0)
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -1248,6 +1263,30 @@ packages:
     resolution: {integrity: sha512-Lg3PnLp0QXpxwLIAuuJboLeRaIhrgJjeuh797QADg3xz8wGLugQOS5DpsE8A6i6Adgzf+bacllkKZG3J0tGfDw==}
     dev: true
 
+  /@maskito/core@2.3.1:
+    resolution: {integrity: sha512-KmRGNK4g0hyXnLVKVlnCRfokPaRkOVEH4nMI8NK9p6cKPlRwC9V0l2MRxZKgBAhVvenQ8t5GM8xvl+wqOGUTFQ==}
+    dev: false
+
+  /@maskito/kit@2.3.1(@maskito/core@2.3.1):
+    resolution: {integrity: sha512-AhW7IsEC4j2pg4qmGGFcVrcAx3PFYFKiza1vf5NRn7/2LU88/5uS6fIhKs6Uvdp3VzdNAHRQUOSVU2Ek13MOTA==}
+    peerDependencies:
+      '@maskito/core': ^2.3.1
+    dependencies:
+      '@maskito/core': 2.3.1
+    dev: false
+
+  /@maskito/react@2.3.1(@maskito/core@2.3.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-kFUvyyGLbAEe0Q2vEfcNtrgtL5/rtujOE7BmfIK+DCRiKS7whmO+/YVIOFPnDtnXnPgXjhyqWDQKbH9XOk3+ig==}
+    peerDependencies:
+      '@maskito/core': ^2.3.1
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
+    dependencies:
+      '@maskito/core': 2.3.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@mdx-js/mdx@2.3.0:
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
     dependencies:
@@ -1777,6 +1816,36 @@ packages:
     dependencies:
       '@babel/runtime': 7.24.0
       '@radix-ui/react-slot': 1.0.2(@types/react@18.2.61)(react@18.2.0)
+      '@types/react': 18.2.61
+      '@types/react-dom': 18.2.19
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@radix-ui/react-radio-group@1.1.3(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-x+yELayyefNeKeTx4fjK6j99Fs6c4qKm3aY38G3swQVTN6xMpsrbigC0uHs2L//g8q4qR7qOcww8430jJmi2ag==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.24.0
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-direction': 1.0.1(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-roving-focus': 1.0.4(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-use-previous': 1.0.1(@types/react@18.2.61)(react@18.2.0)
+      '@radix-ui/react-use-size': 1.0.1(@types/react@18.2.61)(react@18.2.0)
       '@types/react': 18.2.61
       '@types/react-dom': 18.2.19
       react: 18.2.0
@@ -7384,6 +7453,17 @@ packages:
       '@types/react': 18.2.61
       react: 18.2.0
       tslib: 2.6.2
+    dev: false
+
+  /use-mask-input@3.3.7(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-cj3sSnRzF0r1lNBk9NzAgbvQTgCOB7n5wL4tJrXQB2YR9hS4adWCaqEVqJvWHcRqTFb8hekmITQYPOZrDSN/Yg==}
+    engines: {node: '>=16', npm: '>=7'}
+    peerDependencies:
+      react: '>=16.4 || 17 || 18 || 20'
+      react-dom: '>=16.4 || 17 || 18 || 20'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /use-sidecar@1.1.2(@types/react@18.2.61)(react@18.2.0):

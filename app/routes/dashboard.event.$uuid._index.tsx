@@ -131,9 +131,11 @@ export default function DashboardEventDetailPage() {
                             <h1 className="text-2xl font-bold">Jenis Tiket</h1>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button size="icon" variant="outline">
-                                <Plus size={16} />
-                                <span className="sr-only">Add</span>
+                            <Button asChild size="icon" variant="outline">
+                                <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
+                                    <Plus size={16} />
+                                    <span className="sr-only">Add</span>
+                                </Link>
                             </Button>
                             <Button size="icon" variant="outline">
                                 <Pencil size={16} />
