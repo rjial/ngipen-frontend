@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, NavLink, useLoaderData, useLocation } from "@remix-run/react";
+import { Link, NavLink, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { string } from "zod";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
 import { Event } from "~/data/entity/events/Event";
@@ -37,7 +38,9 @@ export default function DashboardEventPage() {
     const data = useLoaderData<typeof loader>()
     const { search } = useLocation()
     const page = new URLSearchParams(search).get("page")
+    const fetcher = useFetcher<{error: boolean, message: string, data: Page<Event> | undefined}>()
     const dataRes: Page<Event> | undefined = data.data || undefined
+    const [initialData, setInitialData] = useState<Page<Event>>(data.data || [])
     // const { toast } = useToast()
     // useEffect(() => {
     //     console.log(data)
@@ -46,6 +49,11 @@ export default function DashboardEventPage() {
     //         toast({ title: data.message, variant: data.error ? "destructive" : "default" })
     //     }
     // }, [data])
+    useEffect(() => {
+        if (fetcher.data != undefined) {
+            setInitialData(fetcher.data?.data as Page<Event>)
+        }
+    }, [fetcher.data])
     return (
         <div className="flex flex-col w-full gap-4">
             <div className="flex items-center justify-between gap-4">
@@ -66,7 +74,7 @@ export default function DashboardEventPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data.data != undefined && (data.data as Page<Event>).content.map((eventItem) => {
+                        {initialData.content.map((eventItem) => {
                         return (
                         <TableRow>
                             <TableCell>
@@ -197,9 +205,9 @@ export default function DashboardEventPage() {
                     <span className="md:hidden">Showing 1-5 of 100</span>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" disabled={true}>Previous</Button>
-                    {[...Array(dataRes?.totalPages).keys()].map((item) => <Button asChild variant={(Number(page || 0)) == item ? "default" : "outline"}><Link to={`/dashboard/event?page=${item}`}>{item + 1}</Link></Button>)}
-                    <Button variant="outline" disabled={true}>Next</Button>
+                    <Button variant="outline" onClick={() => fetcher.load(`/dashboard/event?page=${initialData.pageable.pageNumber - 1}`)} disabled={initialData.first}>Previous</Button>
+                    {[...Array(initialData.totalPages).keys()].map((item) => <Button onClick={() => fetcher.load(`/dashboard/event?page=${item}`)} variant={(Number(initialData.pageable.pageNumber || 0)) == item ? "default" : "outline"}>{item + 1}</Button>)}
+                    <Button variant="outline" onClick={() => fetcher.load(`/dashboard/event?page=${initialData.pageable.pageNumber + 1}`)} disabled={initialData.last}>Next</Button>
                 </div>
             </div>
         </div>
