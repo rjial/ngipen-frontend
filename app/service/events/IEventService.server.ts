@@ -9,6 +9,14 @@ import { Page } from "~/data/entity/common/Page";
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
 
 export class IEventService implements EventService {
+    async getJenisTiketDetail(uuid: string, id: number, request?: Request | undefined): Promise<Response<JenisTiket>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<JenisTiket>(`/event/${uuid}/jenistiket/${id}`, request)
+    }
+    async updateJenisTiket(data: AddJenisTiketRequest, uuid: string, id: number, request: Request): Promise<Response<JenisTiket>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.put<JenisTiket, AddJenisTiketRequest>(`/event/${uuid}/jenistiket/${id}`, data, request)
+    }
     deleteJenisTiket(id: number, uuid: string, request: Request): Promise<Response<string>> {
         const fetchClient = new FetchClient()
         return fetchClient.delete<string, string>(`/event/${uuid}/jenistiket/${id}`, "", request)

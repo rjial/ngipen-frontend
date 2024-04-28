@@ -137,10 +137,6 @@ export default function DashboardEventDetailPage() {
                                     <span className="sr-only">Add</span>
                                 </Link>
                             </Button>
-                            <Button size="icon" variant="outline">
-                                <Pencil size={16} />
-                                <span className="sr-only">Edit</span>
-                            </Button>
                         </div>
                     </div>
                     <div className="border rounded-lg shadow-sm">
@@ -166,11 +162,17 @@ export default function DashboardEventDetailPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell>Rp {jenisTiketItem.harga}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="space-x-4">
                                                 <Button asChild size="icon" variant="outline">
                                                     <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/delete`}>
                                                         <Trash  size={16} />
                                                         <span className="sr-only">Delete</span>
+                                                    </Link>
+                                                </Button>
+                                                <Button asChild size="icon" variant="outline">
+                                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/edit`}>
+                                                        <Pencil  size={16} />
+                                                        <span className="sr-only">Edit</span>
                                                     </Link>
                                                 </Button>
                                             </TableCell>
