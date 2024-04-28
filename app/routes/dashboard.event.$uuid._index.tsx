@@ -167,7 +167,12 @@ export default function DashboardEventDetailPage() {
                                             </TableCell>
                                             <TableCell>Rp {jenisTiketItem.harga}</TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">Inactive</Badge>
+                                                <Button asChild size="icon" variant="outline">
+                                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/delete`}>
+                                                        <Trash  size={16} />
+                                                        <span className="sr-only">Delete</span>
+                                                    </Link>
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     )

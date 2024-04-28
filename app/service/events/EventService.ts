@@ -9,4 +9,5 @@ export interface EventService {
     getEvent(uuid: string): Promise<Response<Event>>
     getJenisTiket(uuid: string, request?: Request): Promise<Response<JenisTiket[]>>
     insertJenisTiket(data: AddJenisTiketRequest,uuid: string, request: Request): Promise<Response<JenisTiket>>
+    deleteJenisTiket(id: number, uuid: string, request: Request): Promise<Response<string>>
 }
