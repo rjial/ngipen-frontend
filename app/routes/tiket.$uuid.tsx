@@ -75,7 +75,7 @@ export default function TiketPage() {
                         <CardDescription>{handleDate(data?.tiket.date)} - ({data?.tiket.waktu_awal} - {data?.tiket.waktu_akhir})</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex items-center justify-between">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400">Ticket Type</p>
                                 <p className="font-medium">{data?.tiket.jenisTiket}</p>
@@ -86,13 +86,25 @@ export default function TiketPage() {
                             </div>
                         </div>
                         <Separator className="my-4" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p className="text-gray-500 dark:text-gray-400">Lokasi</p>
+                                <p className="font-medium">{data?.tiket.lokasi}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 dark:text-gray-400">Total</p>
+                                <p className="font-medium">{data?.tiket.statusVerifikasi ? "Terverifikasi" : "Belum Terverifikasi"}</p>
+                            </div>
+                        </div>
                     </CardContent>
                     <CardFooter>
                     </CardFooter>
                 </Card>
-                <Card className="col-span-1 flex justify-center items-center">
-                    <img src={data.qrData} id={imgQrId} />
-                </Card>
+                <div className="">
+                    <Card className="w-64 h-64 col-span-1 flex justify-center items-center">
+                        <img src={data.qrData} id={imgQrId} />
+                    </Card>
+                </div>
             </div>
         </div>
     )

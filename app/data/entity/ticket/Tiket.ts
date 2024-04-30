@@ -8,4 +8,6 @@ export interface Tiket {
     price: number;
     waktu_awal: string;
     waktu_akhir: string;
+    lokasi: string;
+    statusVerifikasi: boolean;
 }
