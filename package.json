@@ -11,10 +11,12 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@alzera/react-scanner": "^1.0.6",
     "@fontsource-variable/inter": "^5.0.17",
     "@maskito/core": "^2.3.1",
     "@maskito/kit": "^2.3.1",
     "@maskito/react": "^2.3.1",
+    "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.5",

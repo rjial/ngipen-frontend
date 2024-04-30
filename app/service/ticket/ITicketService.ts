@@ -3,8 +3,13 @@ import { Page } from "~/data/entity/common/Page";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 import {TicketService} from "./TicketService"
 import { FetchClient } from "../FetchClient.server";
+import { TiketVerificationPayloadRequest } from "~/data/dto/ticket/TiketVerificationPayloadRequest";
 
 export class ITicketService implements TicketService {
+    scanTiketQR(data: TiketVerificationPayloadRequest, request: Request): Promise<Response<Tiket>> {
+        const fetchClient = new FetchClient();
+        return fetchClient.post<Tiket, TiketVerificationPayloadRequest>("/tiket/verify", data, request)
+    }
     generateTiketQR(uuid: string, request: Request): Promise<Blob> {
         const fetchClient = new FetchClient();
         return fetchClient.getBlob(`/tiket/${uuid}/qr`, request)
