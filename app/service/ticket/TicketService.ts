@@ -5,4 +5,5 @@ import { Tiket } from "~/data/entity/ticket/Tiket";
 export interface TicketService {
     getTickets(data: {page: number, size: number, request: Request}): Promise<Response<Page<Tiket>>>
     getTiket(data: {uuid: string, request: Request}): Promise<Response<Tiket>>
+    generateTiketQR(uuid: string, request: Request): Promise<Blob>
 }

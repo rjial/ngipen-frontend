@@ -81,4 +81,15 @@ export class FetchClient {
         }
     }
 
+    async getBlob(resource: string, request?: Request | undefined, config?: RequestInit | undefined): Promise<Blob> {
+        try {
+            const response = await fetch(this.getURL(resource), {...config, headers: await this.getHeader(request), method: "GET"})
+            const data = await response.blob()
+            return data
+        } catch(err) {
+            // @ts-ignore
+            throw new Response(`Oh no! Something went wrong! ${exc.message}`, { status: 500 })
+        }
+    }
+
 }

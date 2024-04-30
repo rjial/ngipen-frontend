@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Calendar, MapPin } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
 import { Tiket } from "~/data/entity/ticket/Tiket";
@@ -14,14 +14,17 @@ import { ITicketService } from "~/service/ticket/ITicketService";
 import { destroySession } from "~/sessions";
 import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
+import { blobToBase64 } from "~/utils/fileUtil";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const ticketService = new ITicketService()
     try {
         const uuidTicket = params.uuid as string
         const res = await ticketService.getTiket({ uuid: uuidTicket, request: request })
+        const qrRes = await ticketService.generateTiketQR(uuidTicket, request)
         if (res.status_code == 200) {
-            return json({ error: false, message: res.message, data: res.data })
+            const base64 = await blobToBase64(qrRes)
+            return json({ error: false, message: res.message, data: {tiket: res.data, qrData: base64} })
         } else if(res.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -30,7 +33,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                 }
             })
         } else {
-            return json({ error: true, message: res.message, data: res.data })
+            return json({ error: true, message: res.message, data: undefined })
         }
     } catch (err) {
         // @ts-ignore
@@ -41,9 +44,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export default function TiketPage() {
     const { error, message, data } = useLoaderData<typeof loader>()
     const { toast } = useToast()
+    const imgQRRef = useRef<HTMLImageElement | null>(null)
+    const imgQrId = useId()
+    const [qrCode, setQRCode] = useState(data.qrData)
     useEffect(() => {
-        // console.log(data)
-        if (data != undefined) console.log(data, typeof data)
         if (error) toast({ title: message, variant: error ? "destructive" : "default" })
     }, [data])
     return (
@@ -60,31 +64,34 @@ export default function TiketPage() {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink href={`/tiket/${data?.uuid}`}>{data?.uuid}</BreadcrumbLink>
+                        <BreadcrumbLink href={`/tiket/${data?.tiket.uuid}`}>{data?.tiket.uuid}</BreadcrumbLink>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <div className="grid grid-cols-1 gap-6">
-                <Card className="w-full">
+            <div className="grid grid-cols-5 gap-6">
+                <Card className="w-full col-span-4">
                     <CardHeader>
-                        <CardTitle>{data?.event}</CardTitle>
-                        <CardDescription>{handleDate(data?.date)} - ({data?.waktu_awal} - {data?.waktu_akhir})</CardDescription>
+                        <CardTitle>{data?.tiket.event}</CardTitle>
+                        <CardDescription>{handleDate(data?.tiket.date)} - ({data?.tiket.waktu_awal} - {data?.tiket.waktu_akhir})</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400">Ticket Type</p>
-                                <p className="font-medium">{data?.jenisTiket}</p>
+                                <p className="font-medium">{data?.tiket.jenisTiket}</p>
                             </div>
                             <div>
                                 <p className="text-gray-500 dark:text-gray-400">Total</p>
-                                <p className="font-medium">Rp {data?.price}</p>
+                                <p className="font-medium">Rp {data?.tiket.price}</p>
                             </div>
                         </div>
                         <Separator className="my-4" />
                     </CardContent>
                     <CardFooter>
                     </CardFooter>
+                </Card>
+                <Card className="col-span-1 flex justify-center items-center">
+                    <img src={data.qrData} id={imgQrId} />
                 </Card>
             </div>
         </div>
