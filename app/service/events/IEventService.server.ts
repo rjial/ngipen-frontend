@@ -9,6 +9,10 @@ import { Page } from "~/data/entity/common/Page";
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
 
 export class IEventService implements EventService {
+    getMyEvents(page: number, size: number, request: Request): Promise<Response<Page<Event>>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<Page<Event>>(`/event/myevents?page=${page}&size=${size}`, request)
+    }
     async getJenisTiketDetail(uuid: string, id: number, request?: Request | undefined): Promise<Response<JenisTiket>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<JenisTiket>(`/event/${uuid}/jenistiket/${id}`, request)

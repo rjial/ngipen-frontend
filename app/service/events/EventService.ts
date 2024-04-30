@@ -6,6 +6,7 @@ import { JenisTiket } from "~/data/entity/events/JenisTiket";
 
 export interface EventService {
     getEvents(page: number, size: number, request: Request): Promise<Response<Page<Event>>>
+    getMyEvents(page: number, size: number, request: Request): Promise<Response<Page<Event>>>
     getEvent(uuid: string): Promise<Response<Event>>
     getJenisTiket(uuid: string, request?: Request): Promise<Response<JenisTiket[]>>
     getJenisTiketDetail(uuid: string, id: number, request?: Request): Promise<Response<JenisTiket>>

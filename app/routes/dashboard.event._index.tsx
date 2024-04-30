@@ -24,7 +24,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         const url = new URL(request.url)
         const page = Number(url.searchParams.get("page")) || 0
         const size = 10
-        const res = await eventService.getEvents(page, size, request)
+        const res = await eventService.getMyEvents(page, size, request)
         if (res.status_code == 200) {
             return json({ error: false, message: res.message, data: res.data })
         } else if(res.status_code == 401) {
