@@ -151,9 +151,10 @@ export default function DashboardEventDetailPage() {
                 </div>
             </div>
             <Tabs defaultValue="details">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="details">Details</TabsTrigger>
                     <TabsTrigger value="jenistiket">Jenis Tiket</TabsTrigger>
+                    <TabsTrigger value="tiket">Tiket</TabsTrigger>
                     <TabsTrigger value="deskripsi">Deskripsi</TabsTrigger>
                 </TabsList>
                 <TabsContent value="details">
@@ -213,6 +214,66 @@ export default function DashboardEventDetailPage() {
                                     <div className="font-medium">2022-06-15 03:45 PM</div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="jenistiket">
+                    <div className="space-y-3"> 
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold">Jenis Tiket</h1>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button asChild size="icon" variant="outline">
+                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
+                                        <Plus size={16} />
+                                        <span className="sr-only">Add</span>
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="border rounded-lg shadow-sm">
+                            <Table className="table-auto">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-fit">Id</TableHead>
+                                        <TableHead className="">Jenis Tiket</TableHead>
+                                        <TableHead className="">Harga</TableHead>
+                                        <TableHead className="">Aksi</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {jenisTiketRes && jenisTiketRes.map((jenisTiketItem) => {
+                                        return (
+                                            <TableRow>
+                                                <TableCell>
+                                                    {jenisTiketItem.id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center">
+                                                        <div className="ml-2 font-medium">{jenisTiketItem.nama}</div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>Rp {jenisTiketItem.harga}</TableCell>
+                                                <TableCell className="space-x-4">
+                                                    <Button asChild size="icon" variant="outline">
+                                                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/delete`}>
+                                                            <Trash  size={16} />
+                                                            <span className="sr-only">Delete</span>
+                                                        </Link>
+                                                    </Button>
+                                                    <Button asChild size="icon" variant="outline">
+                                                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/edit`}>
+                                                            <Pencil  size={16} />
+                                                            <span className="sr-only">Edit</span>
+                                                        </Link>
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </TabsContent>

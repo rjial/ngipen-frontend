@@ -7,8 +7,13 @@ import { FetchClient } from "../FetchClient.server";
 import { JenisTiket } from "~/data/entity/events/JenisTiket";
 import { Page } from "~/data/entity/common/Page";
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
+import { Tiket } from "~/data/dto/payment/Tiket";
 
 export class IEventService implements EventService {
+    getTiketsByPemegangAcara(uuidEvent: string, page: number, size: number, request: Request): Promise<Response<Page<Tiket>>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<Page<Tiket>>(`/event/${uuidEvent}/tiket?page=${page}&size=${size}`, request)
+    }
     getMyEvents(page: number, size: number, request: Request): Promise<Response<Page<Event>>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<Page<Event>>(`/event/myevents?page=${page}&size=${size}`, request)
