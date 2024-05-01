@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { Form, Link, NavLink, useActionData, useLoaderData, useLocation } from "@remix-run/react";
+import { Form, Link, NavLink, useActionData, useLoaderData, useLocation, useOutletContext } from "@remix-run/react";
 import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
@@ -37,7 +37,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
             // const jenisTiketRes = await eventService.getJenisTiket(eventRes.data?.uuid!)
             // return redirect(`/dashboard/event/${eventUuid}`)
 
-            return json({ error: false, message: eventRes.message, data: {event: eventRes.data, jenisTiket: jenisTiketRes.data} })
+            return json({ error: false, message: eventRes.message, data: {jenisTiket: jenisTiketRes.data} })
         } else if (eventRes.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -69,7 +69,7 @@ export const action = async({request, params}: ActionFunctionArgs) => {
         const res = await eventService.updateJenisTiket(validation.data, eventUuid, idJenisTiket, request)
         if (res.status_code == 200) {
             // return json({error: false, message: res.message, data: res.data})
-            return redirect(`/dashboard/event/${eventUuid}`)
+            return redirect(`/dashboard/event/${eventUuid}/jenistiket`)
         } else if(res.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -90,9 +90,10 @@ export default function DashboardEventEditPage() {
     const data = useLoaderData<typeof loader>()
     const actionData = useActionData<typeof action>()
     // @ts-ignore
-    const eventRes: Event | undefined = data.data != undefined && data.data.event
+    // const eventRes: Event | undefined = data.data != undefined && data.data.event
+    const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
     // @ts-ignore
-    const jenisTiketRes: JenisTiket | undefined = data.data != undefined && data.data.jenisTiket
+    const jenisTiketRes: JenisTiket | undefined = data.data?.jenisTiket
     const [namaJenisTiket, setNamaJenisTiket] = useState(jenisTiketRes?.nama)
     const [hargaJenisTiket, setHargaJenisTiket] = useState(jenisTiketRes?.harga)
     useEffect(() => {
@@ -103,7 +104,7 @@ export default function DashboardEventEditPage() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button asChild size="icon" variant="outline">
-                        <Link to={`/dashboard/event/${eventRes?.uuid}`}>
+                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket`}>
                             <ArrowLeft size={16} />
                             <span className="sr-only">Back</span>
                         </Link>

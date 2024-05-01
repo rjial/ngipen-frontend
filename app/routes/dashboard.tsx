@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { SheetTrigger, SheetContent, Sheet } from "@/components/ui/sheet"
 import { CardTitle, CardDescription, CardHeader, CardContent, Card } from "@/components/ui/card"
-import { Link, NavLink, Outlet, useOutletContext } from "@remix-run/react"
+import { Link, NavLink, Outlet, isRouteErrorResponse, useOutletContext, useRouteError } from "@remix-run/react"
 import { PropsWithChildren, useState } from "react"
 import { NavBar, NavbarUser } from "~/components/common/Navbar"
 import { UserClaim } from "~/data/entity/auth/UserClaim"
@@ -42,3 +42,29 @@ export default function DashboardLayout() {
         </div>
     )
 }
+
+export function ErrorBoundary() {
+    const error = useRouteError();
+  
+    if (isRouteErrorResponse(error)) {
+      return (
+        <div>
+          <h1>
+            {error.status} {error.statusText}
+          </h1>
+          <p>{error.data}</p>
+        </div>
+      );
+    } else if (error instanceof Error) {
+      return (
+        <div>
+          <h1>Error</h1>
+          <p>{error.message}</p>
+          <p>The stack trace is:</p>
+          <pre>{error.stack}</pre>
+        </div>
+      );
+    } else {
+      return <h1>Unknown Error</h1>;
+    }
+  }

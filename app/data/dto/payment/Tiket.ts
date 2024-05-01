@@ -7,7 +7,7 @@ export interface Tiket {
     id: number;
     uuid: string;
     statusTiket: boolean;
-    user: Partial<User>;
+    user: string;
     jenisTiket: JenisTiket;
     paymentTransaction: string;
     paymentHistory: PaymentHistory;

@@ -34,7 +34,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         const eventRes = await eventService.deleteJenisTiket(idJenisTiket, eventUuid, request)
         if (eventRes.status_code == 200) {
             // const jenisTiketRes = await eventService.getJenisTiket(eventRes.data?.uuid!)
-            return redirect(`/dashboard/event/${eventUuid}`)
+            return redirect(`/dashboard/event/${eventUuid}/jenistiket`)
             // return json({ error: false, message: eventRes.message, data: eventRes.data })
         } else if(eventRes.status_code == 401) {
             const session = await getAuthSession(request)
@@ -44,11 +44,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                 }
             })
         } else {
-            return redirect(`/dashboard/event/${eventUuid}`)
+            return redirect(`/dashboard/event/${eventUuid}/jenistiket`)
         }
     } catch(err) {
         // @ts-ignore
-        return redirect(`/dashboard/event/${eventUuid}`)
+        return redirect(`/dashboard/event/${eventUuid}/jenistiket`)
     }
     // return json({})
 }
