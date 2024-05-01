@@ -21,6 +21,7 @@ import { handleDate } from "~/utils/dateUtil";
 import { levelName } from "~/utils/levelUtil";
 import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -144,134 +145,160 @@ export default function DashboardEventDetailPage() {
                         </AlertDialogContent>
                     </AlertDialog>
                     <Button size="icon" variant="outline">
-                        <Pencil size={16} />
-                        <span className="sr-only">Edit</span>
-                    </Button>
-                    <Button size="icon" variant="outline">
                         <Trash size={16} />
                         <span className="sr-only">Delete</span>
                     </Button>
                 </div>
             </div>
-            <div className="gap-4">
-                <div className="space-y-4">
-                    <div className="border rounded-lg shadow-sm">
-                        <div className="flex items-center gap-4 p-4 border-b">
-                            <img
-                                alt="Avatar"
-                                className="rounded-full"
-                                height="48"
-                                src="https://source.unsplash.com/U7HLzMO4SIY"
-                                style={{
-                                    aspectRatio: "48/48",
-                                    objectFit: "cover",
-                                }}
-                                width="48"
-                            />
-                            <div>
-                                <div className="font-medium">{eventRes?.name}</div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400">{eventRes?.lokasi}</div>
+            <Tabs defaultValue="details">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="jenistiket">Jenis Tiket</TabsTrigger>
+                    <TabsTrigger value="deskripsi">Deskripsi</TabsTrigger>
+                </TabsList>
+                <TabsContent value="details">
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold">Detail</h1>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button asChild size="icon" variant="outline">
+                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
+                                        <Pencil size={16} />
+                                        <span className="sr-only">Edit</span>
+                                    </Link>
+                                </Button>
                             </div>
                         </div>
-                        <div className="p-4 grid md:grid-cols-3 gap-4">
-                            <div className="grid gap-1">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Lokasi</div>
-                                <div className="font-medium">{eventRes?.lokasi}</div>
-                            </div>
-                            <div className="grid gap-1">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Event</div>
-                                <div className="font-medium">{handleDate(eventRes?.tanggal_awal || "")}</div>
-                            </div>
-                            <div className="grid gap-1">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Waktu Event</div>
-                                <div className="font-medium">
-                                    {eventRes?.waktu_awal} - {eventRes?.waktu_akhir}
+                        <div className="border rounded-lg shadow-sm">
+                            <div className="flex items-center gap-4 p-4 border-b">
+                                <img
+                                    alt="Avatar"
+                                    className="rounded-full"
+                                    height="48"
+                                    src="https://source.unsplash.com/U7HLzMO4SIY"
+                                    style={{
+                                        aspectRatio: "48/48",
+                                        objectFit: "cover",
+                                    }}
+                                    width="48"
+                                />
+                                <div>
+                                    <div className="font-medium">{eventRes?.name}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">{eventRes?.lokasi}</div>
                                 </div>
                             </div>
-                            <div className="grid gap-1">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Last Login</div>
-                                <div className="font-medium">2023-04-25 10:30 AM</div>
+                            <div className="p-4 grid md:grid-cols-3 gap-4">
+                                <div className="grid gap-1">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Lokasi</div>
+                                    <div className="font-medium">{eventRes?.lokasi}</div>
+                                </div>
+                                <div className="grid gap-1">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Event</div>
+                                    <div className="font-medium">{handleDate(eventRes?.tanggal_awal || "")}</div>
+                                </div>
+                                <div className="grid gap-1">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Waktu Event</div>
+                                    <div className="font-medium">
+                                        {eventRes?.waktu_awal} - {eventRes?.waktu_akhir}
+                                    </div>
+                                </div>
+                                <div className="grid gap-1">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Last Login</div>
+                                    <div className="font-medium">2023-04-25 10:30 AM</div>
+                                </div>
+                                <div className="grid gap-1">
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">Created At</div>
+                                    <div className="font-medium">2022-06-15 03:45 PM</div>
+                                </div>
                             </div>
-                            <div className="grid gap-1">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Created At</div>
-                                <div className="font-medium">2022-06-15 03:45 PM</div>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="jenistiket">
+                    <div className="space-y-3"> 
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold">Jenis Tiket</h1>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button asChild size="icon" variant="outline">
+                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
+                                        <Plus size={16} />
+                                        <span className="sr-only">Add</span>
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="border rounded-lg shadow-sm">
+                            <Table className="table-auto">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-fit">Id</TableHead>
+                                        <TableHead className="">Jenis Tiket</TableHead>
+                                        <TableHead className="">Harga</TableHead>
+                                        <TableHead className="">Aksi</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {jenisTiketRes && jenisTiketRes.map((jenisTiketItem) => {
+                                        return (
+                                            <TableRow>
+                                                <TableCell>
+                                                    {jenisTiketItem.id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center">
+                                                        <div className="ml-2 font-medium">{jenisTiketItem.nama}</div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>Rp {jenisTiketItem.harga}</TableCell>
+                                                <TableCell className="space-x-4">
+                                                    <Button asChild size="icon" variant="outline">
+                                                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/delete`}>
+                                                            <Trash  size={16} />
+                                                            <span className="sr-only">Delete</span>
+                                                        </Link>
+                                                    </Button>
+                                                    <Button asChild size="icon" variant="outline">
+                                                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/edit`}>
+                                                            <Pencil  size={16} />
+                                                            <span className="sr-only">Edit</span>
+                                                        </Link>
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+                </TabsContent>
+                <TabsContent value="deskripsi">
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold">Deskripsi</h1>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button size="icon" variant="outline">
+                                    <Pencil size={16} />
+                                    <span className="sr-only">Edit</span>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="border rounded-lg shadow-sm">
+                            <div className="p-4 text-justify">
+                                {eventRes?.desc}
+                                {/* Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas praesentium aliquam ut, et accusantium architecto rerum! Doloribus aliquid esse quod eum error excepturi quos deleniti. Aliquid ipsum porro dolores facilis? */}
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <h1 className="text-2xl font-bold">Jenis Tiket</h1>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Button asChild size="icon" variant="outline">
-                                <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
-                                    <Plus size={16} />
-                                    <span className="sr-only">Add</span>
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="border rounded-lg shadow-sm">
-                        <Table className="table-auto">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-fit">Id</TableHead>
-                                    <TableHead className="">Jenis Tiket</TableHead>
-                                    <TableHead className="">Harga</TableHead>
-                                    <TableHead className="">Aksi</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {jenisTiketRes && jenisTiketRes.map((jenisTiketItem) => {
-                                    return (
-                                        <TableRow>
-                                            <TableCell>
-                                                {jenisTiketItem.id}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center">
-                                                    <div className="ml-2 font-medium">{jenisTiketItem.nama}</div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>Rp {jenisTiketItem.harga}</TableCell>
-                                            <TableCell className="space-x-4">
-                                                <Button asChild size="icon" variant="outline">
-                                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/delete`}>
-                                                        <Trash  size={16} />
-                                                        <span className="sr-only">Delete</span>
-                                                    </Link>
-                                                </Button>
-                                                <Button asChild size="icon" variant="outline">
-                                                    <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/${jenisTiketItem.id}/edit`}>
-                                                        <Pencil  size={16} />
-                                                        <span className="sr-only">Edit</span>
-                                                    </Link>
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <h1 className="text-2xl font-bold">Deskripsi</h1>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Button size="icon" variant="outline">
-                                <Pencil size={16} />
-                                <span className="sr-only">Edit</span>
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="border rounded-lg shadow-sm">
-                        <div className="p-4 text-justify">
-                            {eventRes?.desc}
-                            {/* Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas praesentium aliquam ut, et accusantium architecto rerum! Doloribus aliquid esse quod eum error excepturi quos deleniti. Aliquid ipsum porro dolores facilis? */}
-                        </div>
-                    </div>
-                </div>
+                </TabsContent>
+            </Tabs>
+            <div className="gap-4">
                 {/* <div className="space-y-4">
                     <div className="h-fit">
                         <Card className="h-fit">
