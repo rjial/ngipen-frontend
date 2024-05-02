@@ -1,13 +1,14 @@
+import { User } from "~/data/entity/auth/User";
+import { JenisTiket } from "~/data/entity/events/JenisTiket";
+import { PaymentHistory } from "../../dto/payment/PaymentHistory";
+
+
 export interface Tiket {
+    id: number;
     uuid: string;
     statusTiket: boolean;
-    namaUser: string;
-    jenisTiket: string;
-    event: string;
-    date: string;
-    price: number;
-    waktu_awal: string;
-    waktu_akhir: string;
-    lokasi: string;
-    statusVerifikasi: boolean;
+    user: string;
+    jenisTiket: JenisTiket;
+    paymentTransaction: string;
+    paymentHistory: PaymentHistory;
 }

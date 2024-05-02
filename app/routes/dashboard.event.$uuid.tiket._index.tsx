@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useActionData, useFetcher, useLoaderData, useLocation, useOutletContext } from "@remix-run/react";
-import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
+import { ArrowLeft, CalendarDaysIcon, Ellipsis, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
@@ -22,7 +22,7 @@ import { levelName } from "~/utils/levelUtil";
 import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tiket } from "~/data/dto/payment/Tiket";
+import { Tiket } from "~/data/entity/ticket/Tiket";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -67,7 +67,7 @@ export default function DashboardEventTiketListPage() {
                     <h1 className="text-2xl font-bold">Tiket</h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* <Button asChild size="icon" variant="outline">
+                    {/* <Button asChild size="icon" variTiketant="outline">
                         <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
                             <Plus size={16} />
                             <span className="sr-only">Add</span>
@@ -84,6 +84,7 @@ export default function DashboardEventTiketListPage() {
                             <TableHead className="">Event</TableHead>
                             <TableHead className="">Jenis Tiket</TableHead>
                             <TableHead className="">Status</TableHead>
+                            <TableHead className="">Aksi</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -104,6 +105,14 @@ export default function DashboardEventTiketListPage() {
                                     </TableCell>
                                     <TableCell>
                                         {tiketItem.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button asChild size="icon" variant="outline">
+                                            <Link to={`/dashboard/event/${eventRes?.uuid}/tiket/${tiketItem.uuid}`}>
+                                                <Ellipsis size={16} />
+                                                <span className="sr-only">See More</span>
+                                            </Link>
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             )

@@ -1,5 +1,5 @@
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
-import { Tiket } from "~/data/dto/payment/Tiket";
+import { Tiket } from "~/data/entity/ticket/Tiket";
 import { Response } from "~/data/entity/Response";
 import { Page } from "~/data/entity/common/Page";
 import { Event } from "~/data/entity/events/Event";

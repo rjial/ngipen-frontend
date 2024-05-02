@@ -7,7 +7,7 @@ import { FetchClient } from "../FetchClient.server";
 import { JenisTiket } from "~/data/entity/events/JenisTiket";
 import { Page } from "~/data/entity/common/Page";
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
-import { Tiket } from "~/data/dto/payment/Tiket";
+import { Tiket } from "~/data/entity/ticket/Tiket";
 
 export class IEventService implements EventService {
     getTiketsByPemegangAcara(uuidEvent: string, page: number, size: number, request: Request): Promise<Response<Page<Tiket>>> {

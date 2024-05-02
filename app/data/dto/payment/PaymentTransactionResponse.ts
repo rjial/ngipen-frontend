@@ -1,5 +1,5 @@
 import { JenisTiket } from "~/data/entity/events/JenisTiket";
-import { Tiket } from "./Tiket";
+import { Tiket } from "../../entity/ticket/Tiket";
 
 export interface PaymentTransactionResponse {
     uuid:                string;

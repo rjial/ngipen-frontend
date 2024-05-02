@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { redirect } from "remix-typedjson";
 import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
-import { Tiket } from "~/data/entity/ticket/Tiket";
+import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { destroySession } from "~/sessions";
 import { getAuthSession } from "~/utils/authUtil";
@@ -61,7 +61,7 @@ export default function TiketPage() {
                 </BreadcrumbList>
             </Breadcrumb>
             <div className="grid grid-cols-1 gap-6">
-                {data != undefined && (data as Page<Tiket>).content.length > 0 && (data as Page<Tiket>).content.map((ticketItem) => {
+                {data != undefined && (data as Page<TiketItemListResponse>).content.length > 0 && (data as Page<TiketItemListResponse>).content.map((ticketItem) => {
                     return (
                         <Card className="w-full">
                             <CardHeader>

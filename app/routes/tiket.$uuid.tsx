@@ -9,7 +9,7 @@ import { Calendar, MapPin } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
-import { Tiket } from "~/data/entity/ticket/Tiket";
+import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { destroySession } from "~/sessions";
 import { getAuthSession } from "~/utils/authUtil";
