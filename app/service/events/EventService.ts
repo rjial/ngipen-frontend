@@ -4,6 +4,7 @@ import { Response } from "~/data/entity/Response";
 import { Page } from "~/data/entity/common/Page";
 import { Event } from "~/data/entity/events/Event";
 import { JenisTiket } from "~/data/entity/events/JenisTiket";
+import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactionResponse";
 
 export interface EventService {
     getEvents(page: number, size: number, request: Request): Promise<Response<Page<Event>>>

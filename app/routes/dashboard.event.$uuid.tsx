@@ -156,10 +156,11 @@ export default function DashboardEventDetailPage() {
                 </div>
             </div>
             <Tabs className="space-y-4" defaultValue={routeName == "_index" ? "details" : routeName}>
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="details" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}`}>Details</NavLink></TabsTrigger>
                     <TabsTrigger value="jenistiket" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/jenistiket`}>Jenis Tiket</NavLink></TabsTrigger>
                     <TabsTrigger value="tiket" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/tiket`}>Tiket</NavLink></TabsTrigger>
+                    <TabsTrigger value="paymenttransaction" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction`}>Payment Transaction</NavLink></TabsTrigger>
                     <TabsTrigger value="deskripsi" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/deskripsi`}>Deskripsi</NavLink></TabsTrigger>
                 </TabsList>
                 <Outlet context={dataContext} />
