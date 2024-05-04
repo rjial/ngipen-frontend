@@ -4,7 +4,9 @@ import { getAuthToken } from "~/utils/authUtil";
 
 export class FetchClient {
     private getURL = (resource: string) => {
-        return new URL(resource, process.env.IS_PRODUCTION ? process.env.PRODUCTION_URL : process.env.DEVELOPMENT_URL)
+        const url = new URL(resource, process.env.NODE_ENV == "production" ? process.env.PRODUCTION_URL != undefined ? process.env.PRODUCTION_URL : "http://localhost:8080" : process.env.DEVELOPMENT_URL != undefined ? process.env.DEVELOPMENT_URL : "http://localhost:8080")
+        console.log(process.env.IS_PRODUCTION)
+        return url 
     }
     private getHeader = async (request: Request | undefined): Promise<Headers> => {
         const header = new Headers()

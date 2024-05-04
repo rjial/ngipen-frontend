@@ -1,6 +1,7 @@
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -9,15 +10,16 @@ import {
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
-import globalStylesheet from "~/globals.css?url";
+import globalStylesheet from "~/globals.css";
 import '@fontsource-variable/inter/wght.css';
 import { Toaster } from "@/components/ui/toaster";
 import { getUserClaim } from "./utils/authUtil";
 import { ICheckoutService } from "./service/checkout/ICheckoutService";
 import { ExternalScripts } from 'remix-utils/external-scripts'
+import { cssBundleHref } from "@remix-run/css-bundle";
 
 export const links: LinksFunction = () => [
-  // ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: globalStylesheet },
 ];
 
@@ -47,6 +49,7 @@ export default function App() {
         <ScrollRestoration />
         <ExternalScripts/>
         <Scripts />
+        <LiveReload/>
         <Toaster/>
       </body>
     </html>
