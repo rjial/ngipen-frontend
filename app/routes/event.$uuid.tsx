@@ -15,8 +15,13 @@ import invariant from 'tiny-invariant'
 import { OrderDataRequest, OrderItemRequest } from "~/data/dto/order/OrderRequest";
 import { handleDate } from "~/utils/dateUtil";
 import { useToast } from "@/components/ui/use-toast";
+import {
+    PayloadLexicalReactRenderer,
+    PayloadLexicalReactRendererProps,
+    PayloadLexicalReactRendererContent
+} from "@atelier-disko/payload-lexical-react-renderer";
 
-export const loader = async ({params}: LoaderFunctionArgs) =>{
+export const loader = async ({ params }: LoaderFunctionArgs) => {
     try {
         const uuidEvent = params.uuid as string
         const eventService = new IEventService()
@@ -62,6 +67,7 @@ export default function EventItemPage() {
     const {event, jenisTiket} = useLoaderData<typeof loader>()
     const [showBuyButton, setShowBuyButton] = useState(false)
     const [jenisTiketCount, setJenisTiketCount] = useState(jenisTiket?.map(item => new JenisTiketCount(item)))
+    const contentDesc = JSON.parse(event?.desc!) as PayloadLexicalReactRendererContent
     const handleIncrementCount = (id: number) => {
         const data = jenisTiketCount?.map(i => {
             if (i.jenistiket == id) {
@@ -189,7 +195,9 @@ export default function EventItemPage() {
                     </Card>
                 </div> : <></>}
             <div  className="pt-8">
-                <p className="text-justify text-wrap break-all">{event?.desc}</p>
+                <p className="text-justify text-wrap break-all">
+                    <PayloadLexicalReactRenderer content={contentDesc} />
+                </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">

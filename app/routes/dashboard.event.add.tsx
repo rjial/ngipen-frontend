@@ -104,7 +104,9 @@ export default function DashboardEventAddPage() {
         // console.log(editorState.toJSON())
         setDescState(JSON.stringify(editorState.toJSON()))
     }, [setDescState])
-
+    const handleDisableEnter = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === "Enter") e.preventDefault()
+    }
     useEffect(() => {
         if (dataAction != undefined) {
             toast({title: dataAction.message, variant: dataAction.error ? "destructive" : "default"})
@@ -125,7 +127,7 @@ export default function DashboardEventAddPage() {
                 </div>
             </div>
             <div className="border rounded-lg shadow-sm">
-                <Form className="p-4 grid gap-4" method="POST">
+                <Form className="p-4 grid gap-4" method="POST" onSubmit={handleDisableEnter}>
                     <div className="grid gap-2">
                         <Label htmlFor="name">Event Name</Label>
                         <Input id="name" name="name" placeholder="Enter name" />

@@ -22,6 +22,7 @@ import { levelName } from "~/utils/levelUtil";
 import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PayloadLexicalReactRenderer, PayloadLexicalReactRendererContent } from "@atelier-disko/payload-lexical-react-renderer";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -50,6 +51,7 @@ export default function DashboardEventDetailPage() {
     const data = useLoaderData<typeof loader>()
     const jenisTiketRes: JenisTiket[] | undefined = data.data.jenistiket || undefined
     const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
+    const contentDesc = JSON.parse(eventRes?.desc!) as PayloadLexicalReactRendererContent
     return (
         <TabsContent value="deskripsi">
             <div className="space-y-4">
@@ -66,8 +68,7 @@ export default function DashboardEventDetailPage() {
                 </div>
                 <div className="border rounded-lg shadow-sm">
                     <div className="p-4 text-justify text-wrap break-all">
-                        {eventRes?.desc}
-                        {/* Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas praesentium aliquam ut, et accusantium architecto rerum! Doloribus aliquid esse quod eum error excepturi quos deleniti. Aliquid ipsum porro dolores facilis? */}
+                        <PayloadLexicalReactRenderer content={contentDesc} />
                     </div>
                 </div>
             </div>

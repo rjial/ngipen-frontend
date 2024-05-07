@@ -31,7 +31,7 @@ const EditorLexical = ({handleChange, defaultState}: {handleChange: (editorState
                 contentEditable={<ContentEditable
                     placeholder="asdasdasd"
                     className="min-h-64 p-4"
-
+                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                 />}
                 placeholder={<div className="editor-placeholder">Enter some rich text...</div>}
                 ErrorBoundary={LexicalErrorBoundary}
