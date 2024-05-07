@@ -82,10 +82,11 @@ export default function Index() {
   }, [fetcher.data]);
 
   const loadNext = () => {
-      console.log(fetcher.data?.res)
-      const page = fetcher.data?.res.pageable.pageNumber! + 1
-      const query = `?index&page=${page}`;
-      fetcher.load(query); // this call will trigger the loader with a new query
+      if (initialData.length >= 12) {
+        const page = fetcher.data?.res.pageable.pageNumber! + 1
+        const query = `?index&page=${page}`;
+        fetcher.load(query); // this call will trigger the loader with a new query
+      }
   };
   return (
     <div className="px-24 space-y-10">

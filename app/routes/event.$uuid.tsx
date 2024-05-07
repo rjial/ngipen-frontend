@@ -189,7 +189,7 @@ export default function EventItemPage() {
                     </Card>
                 </div> : <></>}
             <div  className="pt-8">
-                <p className="text-justify">{event?.desc}</p>
+                <p className="text-justify text-wrap break-all">{event?.desc}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
