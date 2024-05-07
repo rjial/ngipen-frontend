@@ -1,6 +1,3 @@
-/// <reference types="@remix-run/dev" />
-/// <reference types="@remix-run/node" />
-
 import { BaseEditor, Descendant } from 'slate'
 import { ReactEditor } from 'slate-react'
 

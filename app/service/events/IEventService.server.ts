@@ -8,8 +8,13 @@ import { JenisTiket } from "~/data/entity/events/JenisTiket";
 import { Page } from "~/data/entity/common/Page";
 import { AddJenisTiketRequest } from "~/data/dto/event/AddJenisTiketRequest";
 import { Tiket } from "~/data/entity/ticket/Tiket";
+import { AddEventRequest } from "~/data/dto/event/AddEventRequest";
 
 export class IEventService implements EventService {
+    insertEvent(data: AddEventRequest, request: Request): Promise<Response<Event>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.post<Event, AddEventRequest>("/event", data, request)
+    }
     getTiketsByPemegangAcara(uuidEvent: string, page: number, size: number, request: Request): Promise<Response<Page<Tiket>>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<Page<Tiket>>(`/event/${uuidEvent}/tiket?page=${page}&size=${size}`, request)

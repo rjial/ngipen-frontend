@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
-import { SearchIcon } from "lucide-react";
+import { Plus, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { string } from "zod";
 import { UserItem } from "~/data/entity/auth/User";
@@ -66,9 +66,17 @@ export default function DashboardEventPage() {
         <div className="flex flex-col w-full gap-4">
             <div className="flex items-center justify-between gap-4">
                 <h1 className="text-2xl font-bold">Event Management</h1>
-                <form className="flex items-center gap-4">
-                    <Input className="w-[300px] sm:w-[400px]" placeholder="Search..." type="search" />
-                </form>
+                <div className="flex justify-center space-x-3">
+                    <Button asChild size="icon" variant="outline">
+                        <Link to={`/dashboard/event/add`}>
+                            <Plus size={16} />
+                            <span className="sr-only">Add</span>
+                        </Link>
+                    </Button>
+                    <form className="flex items-center gap-4">
+                        <Input className="w-[300px] sm:w-[400px]" placeholder="Search..." type="search" />
+                    </form>
+                </div>
             </div>
             <div className="border rounded-lg shadow-sm">
                 <Table>
@@ -112,98 +120,6 @@ export default function DashboardEventPage() {
                         </TableRow>
                         )
                         })}
-                        {/* <TableRow>
-                            <TableCell>
-                                <div className="flex items-center">
-                                    <img
-                                        alt="Avatar"
-                                        className="rounded-full"
-                                        height="32"
-                                        src="https://source.unsplash.com/U7HLzMO4SIY"
-                                        style={{
-                                            aspectRatio: "32/32",
-                                            objectFit: "cover",
-                                        }}
-                                        width="32"
-                                    />
-                                    <div className="ml-2 font-medium">alice_smith</div>
-                                </div>
-                            </TableCell>
-                            <TableCell>alice@example.com</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>
-                                <Badge variant="outline">Inactive</Badge>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <div className="flex items-center">
-                                    <img
-                                        alt="Avatar"
-                                        className="rounded-full"
-                                        height="32"
-                                        src="https://source.unsplash.com/U7HLzMO4SIY"
-                                        style={{
-                                            aspectRatio: "32/32",
-                                            objectFit: "cover",
-                                        }}
-                                        width="32"
-                                    />
-                                    <div className="ml-2 font-medium">robert_jones</div>
-                                </div>
-                            </TableCell>
-                            <TableCell>robert@example.com</TableCell>
-                            <TableCell>Admin</TableCell>
-                            <TableCell>
-                                <Badge>Active</Badge>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <div className="flex items-center">
-                                    <img
-                                        alt="Avatar"
-                                        className="rounded-full"
-                                        height="32"
-                                        src="https://source.unsplash.com/U7HLzMO4SIY"
-                                        style={{
-                                            aspectRatio: "32/32",
-                                            objectFit: "cover",
-                                        }}
-                                        width="32"
-                                    />
-                                    <div className="ml-2 font-medium">linda_wilson</div>
-                                </div>
-                            </TableCell>
-                            <TableCell>linda@example.com</TableCell>
-                            <TableCell>User</TableCell>
-                            <TableCell>
-                                <Badge variant="outline">Inactive</Badge>
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <div className="flex items-center">
-                                    <img
-                                        alt="Avatar"
-                                        className="rounded-full"
-                                        height="32"
-                                        src="https://source.unsplash.com/U7HLzMO4SIY"
-                                        style={{
-                                            aspectRatio: "32/32",
-                                            objectFit: "cover",
-                                        }}
-                                        width="32"
-                                    />
-                                    <div className="ml-2 font-medium">mike_brown</div>
-                                </div>
-                            </TableCell>
-                            <TableCell>mike@example.com</TableCell>
-                            <TableCell>Admin</TableCell>
-                            <TableCell>
-                                <Badge>Active</Badge>
-                            </TableCell>
-                        </TableRow> */}
                     </TableBody>
                 </Table>
             </div>

@@ -1,7 +1,11 @@
 import dayjs from "dayjs"
 
-export const handleDate = (date: string) => {
-    return dayjs(date, 'YYYY-MM-DD').format("dddd, DD MMMM YYYY")
+export const handleDate = (date: string | Date = new Date()) => {
+    if (date instanceof Date) {
+        return (new Intl.DateTimeFormat("id-ID", {timeZone: "Asia/Jakarta", weekday: "long", year: "numeric", month: "long", day: "numeric"})).format(date)
+    } else if (typeof date == "string") {
+        return dayjs(date, 'YYYY-MM-DD').format("dddd, DD MMMM YYYY")
+    }
 }
 
 export const handleDateTime = (dateTime: string) => {

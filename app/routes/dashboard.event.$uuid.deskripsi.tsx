@@ -65,7 +65,7 @@ export default function DashboardEventDetailPage() {
                     </div>
                 </div>
                 <div className="border rounded-lg shadow-sm">
-                    <div className="p-4 text-justify">
+                    <div className="p-4 text-justify text-wrap break-all">
                         {eventRes?.desc}
                         {/* Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas praesentium aliquam ut, et accusantium architecto rerum! Doloribus aliquid esse quod eum error excepturi quos deleniti. Aliquid ipsum porro dolores facilis? */}
                     </div>
