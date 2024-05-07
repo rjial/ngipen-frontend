@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useActionData, useFetcher, useLoaderData, useLocation, useOutletContext } from "@remix-run/react";
-import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
+import { ArrowLeft, CalendarDaysIcon, Check, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
@@ -33,6 +33,12 @@ export default function DashboardEventDetailPage() {
                         <h1 className="text-2xl font-bold">Detail</h1>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Button asChild size="icon" variant={eventRes?.verifyEvent ? "outline" : "default"}>
+                            <Link to={`/dashboard/event/${eventRes?.uuid}/verify`}>
+                                <Check size={16} />
+                                <span className="sr-only">Verify Event</span>
+                            </Link>
+                        </Button>
                         <Button asChild size="icon" variant="outline">
                             <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
                                 <Pencil size={16} />
@@ -75,8 +81,8 @@ export default function DashboardEventDetailPage() {
                             </div>
                         </div>
                         <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Last Login</div>
-                            <div className="font-medium">2023-04-25 10:30 AM</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi</div>
+                            <div className="font-medium">{eventRes?.verifyEvent ? "Terverifikasi" : "Belum Terverifikasi"}</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Created At</div>

@@ -15,6 +15,7 @@ export interface EventService {
     getJenisTiketDetail(uuid: string, id: number, request?: Request): Promise<Response<JenisTiket>>
     getTiketsByPemegangAcara(uuidEvent: string, page: number, size: number, request: Request): Promise<Response<Page<Tiket>>>
     insertEvent(data: AddEventRequest, request: Request): Promise<Response<Event>>
+    verifyEvent(uuid: string, request: Request): Promise<Response<Event>>
     insertJenisTiket(data: AddJenisTiketRequest,uuid: string, request: Request): Promise<Response<JenisTiket>>
     updateJenisTiket(data: AddJenisTiketRequest,uuid: string,id: number, request: Request): Promise<Response<JenisTiket>>
     deleteJenisTiket(id: number, uuid: string, request: Request): Promise<Response<string>>

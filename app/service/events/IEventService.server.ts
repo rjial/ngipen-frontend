@@ -11,6 +11,10 @@ import { Tiket } from "~/data/entity/ticket/Tiket";
 import { AddEventRequest } from "~/data/dto/event/AddEventRequest";
 
 export class IEventService implements EventService {
+    verifyEvent(uuid: string, request: Request): Promise<Response<Event>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<Event>(`/event/${uuid}/verify`, request)
+    }
     insertEvent(data: AddEventRequest, request: Request): Promise<Response<Event>> {
         const fetchClient = new FetchClient()
         return fetchClient.post<Event, AddEventRequest>("/event", data, request)
