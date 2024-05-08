@@ -9,6 +9,7 @@ import { Link, useLoaderData, useOutletContext } from "@remix-run/react";
 import { CircleIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { NavBar } from "~/components/common/Navbar";
+import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactionResponse";
 import { IPaymentService } from "~/service/payment/IPaymentService";
 import { destroySession } from "~/sessions";
 import { getAuthSession } from "~/utils/authUtil";
@@ -21,22 +22,52 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const paymentService = new IPaymentService()
-    const res = await paymentService.getPayments({ request })
-    console.log(res)
-    if(res.status_code == 401) {
-        const session = await getAuthSession(request)
-        return redirect("/login", {
-            headers: {
-                "Set-Cookie": await destroySession(session)
+    try {
+        const paymentService = new IPaymentService()
+        const res = await paymentService.getPayments({ request })
+        console.log(res)
+        if (res.status_code == 200) {
+            return {
+                error: false,
+                message: res.message,
+                data: res.data
             }
-        })
+        } else if(res.status_code == 401) {
+            const session = await getAuthSession(request)
+            return redirect("/login", {
+                headers: {
+                    "Set-Cookie": await destroySession(session)
+                }
+            })
+        } else {
+            return {
+                error: true,
+                message: res.message,
+                data: undefined
+            }
+        }
+
+    } catch(err) {
+        if (err instanceof Error) {
+            return {
+                error: true,
+                message: err.message,
+                data: undefined
+            }
+        } else {
+            return {
+                error: true,
+                // @ts-ignore
+                message: err.message,
+                data: undefined
+            }
+        }
     }
-    return json({ error: res.status_code == 200, message: res.message, data: res.data })
+    // return json({ error: res.status_code == 200, message: res.message, data: res.data })
 }
 
 export default function Index() {
-    const { data } = useLoaderData<typeof loader>()
+    const { data } = useLoaderData<{error: boolean, message: string, data: PaymentTransactionResponse[]}>()
     const snapScriptRef = useRef<HTMLScriptElement>()
     const handlePaymentProceed = async (snapToken: string) => {
         // @ts-ignore
@@ -115,7 +146,7 @@ export default function Index() {
                             </CardContent>
                             <CardFooter>
                                 <div className="flex flex-col gap-4">
-                                    {paymentItem.paymentTransactions.length > 0 && paymentItem.paymentTransactions.map((paymentTransactionItem) => {
+                                    {paymentItem.paymentTransactions && paymentItem.paymentTransactions.length > 0 && paymentItem.paymentTransactions.map((paymentTransactionItem) => {
                                         return (
                                             <div className="flex items-center gap-4">
                                                 <img
