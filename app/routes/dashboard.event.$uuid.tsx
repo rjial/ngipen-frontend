@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { Link, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useLocation, useMatches } from "@remix-run/react";
+import { Link, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useLocation, useMatches, useNavigation } from "@remix-run/react";
 import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
 import { Event } from "~/data/entity/events/Event";
@@ -89,6 +89,7 @@ export default function DashboardEventDetailPage() {
     const [modal, setModal] = useState<boolean>(false)
     const scanFetcher = useFetcher<typeof action>()
     const dataContext = {eventRes}
+    const navigation = useNavigation()
     // if (data != undefined) {
     //     toast({ title: data.message, variant: data.error ? "destructive" : "default" })
     // }
@@ -163,7 +164,7 @@ export default function DashboardEventDetailPage() {
                     <TabsTrigger value="paymenttransaction" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction`}>Payment Transaction</NavLink></TabsTrigger>
                     <TabsTrigger value="deskripsi" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/deskripsi`}>Deskripsi</NavLink></TabsTrigger>
                 </TabsList>
-                <Outlet context={dataContext} />
+                {navigation.state == "loading" ? <h1>Loading</h1> : <Outlet context={dataContext} />}
             </Tabs>
         </main>
     )
