@@ -138,7 +138,10 @@ export default function DashboardEventTiketListPage() {
                             <div className="text-sm text-gray-500 dark:text-gray-400">Harga Tiket</div>
                             <div className="font-medium">Rp {tiketRes.price}</div>
                         </div>
-                        
+                        <div className="grid gap-1">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Payment Transaction</div>
+                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${tiketRes.paymentTransaction}`}>Rp {tiketRes.paymentTransaction}</Link></div>
+                        </div>
                     </div>
                 </div> }
             </div> 

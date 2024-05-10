@@ -10,4 +10,5 @@ export interface TiketItemListResponse {
     waktu_akhir: string;
     lokasi: string;
     statusVerifikasi: boolean;
+    paymentTransaction: string;
 }
