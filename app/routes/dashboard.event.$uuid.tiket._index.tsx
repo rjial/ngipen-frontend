@@ -23,6 +23,7 @@ import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tiket } from "~/data/entity/ticket/Tiket";
+import {TiketsTable} from "~/components/dashboard/tiket/TiketsTable";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -76,49 +77,7 @@ export default function DashboardEventTiketListPage() {
                 </div>
             </div>
             <div className="border rounded-lg shadow-sm">
-                <Table className="table-auto">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-fit">UUID</TableHead>
-                            <TableHead className="">Nama Pemilik</TableHead>
-                            <TableHead className="">Event</TableHead>
-                            <TableHead className="">Jenis Tiket</TableHead>
-                            <TableHead className="">Status</TableHead>
-                            <TableHead className="">Aksi</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tiketRes && tiketRes.content.length > 0 ? tiketRes.content.map((tiketItem) => {
-                            return (
-                                <TableRow>
-                                    <TableCell>
-                                        {tiketItem.uuid}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center">
-                                            <div className="ml-2 font-medium">{tiketItem.user}</div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{tiketItem.jenisTiket.event}</TableCell>
-                                    <TableCell>
-                                        {tiketItem.jenisTiket.nama}
-                                    </TableCell>
-                                    <TableCell>
-                                        {tiketItem.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button asChild size="icon" variant="outline">
-                                            <Link to={`/dashboard/event/${eventRes?.uuid}/tiket/${tiketItem.uuid}`}>
-                                                <Ellipsis size={16} />
-                                                <span className="sr-only">See More</span>
-                                            </Link>
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            )
-                        }) : <>No Tiket Found</>}
-                    </TableBody>
-                </Table> 
+                {eventRes && tiketRes && <TiketsTable eventRes={eventRes} tiketRes={tiketRes} /> }
             </div> 
         </div> 
         </>

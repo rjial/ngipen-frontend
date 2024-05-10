@@ -68,7 +68,7 @@ export default function DashboardEventTiketListPage() {
         <div className="space-y-3">
            <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <h1 className="text-2xl font-bold">Tiket</h1>
+                    <h1 className="text-2xl font-bold">Payment Transactions</h1>
                 </div>
                 <div className="flex items-center gap-2">
                     {/* <Button asChild size="icon" variTiketant="outline">
@@ -112,7 +112,7 @@ export default function DashboardEventTiketListPage() {
                                     </TableCell>
                                     <TableCell>
                                         <Button asChild size="icon" variant="outline">
-                                            <Link to={`/dashboard/event/${eventRes?.uuid}/payment/${paymentItem.uuid}`}>
+                                            <Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${paymentItem.uuid}`}>
                                                 <Ellipsis size={16} />
                                                 <span className="sr-only">See More</span>
                                             </Link>

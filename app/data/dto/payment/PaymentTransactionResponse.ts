@@ -8,7 +8,7 @@ export interface PaymentTransactionResponse {
     date:                string;
     status:              string;
     user:                string;
-    tikets:              Tiket[];
+    // tikets:              Tiket[];
     paymentTransactions: PaymentTransaction[];
 }
 

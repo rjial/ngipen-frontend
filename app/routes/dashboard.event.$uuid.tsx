@@ -156,7 +156,7 @@ export default function DashboardEventDetailPage() {
                     </Button>
                 </div>
             </div>
-            <Tabs className="space-y-4" defaultValue={routeName == "_index" ? "details" : routeName}>
+            <Tabs className="space-y-4" defaultValue="details" value={routeName == "_index" ? "details" : routeName}>
                 <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="details" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}`}>Details</NavLink></TabsTrigger>
                     <TabsTrigger value="jenistiket" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/jenistiket`}>Jenis Tiket</NavLink></TabsTrigger>
