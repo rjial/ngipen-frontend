@@ -140,7 +140,7 @@ export default function DashboardEventTiketListPage() {
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Payment Transaction</div>
-                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${tiketRes.paymentTransaction}`}>Rp {tiketRes.paymentTransaction}</Link></div>
+                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${tiketRes.paymentTransaction}`}>{tiketRes.paymentTransaction}</Link></div>
                         </div>
                     </div>
                 </div> }
