@@ -67,9 +67,11 @@ export default function DashboardUserDetailPage() {
                         <Pencil size={16} />
                         <span className="sr-only">Edit</span>
                     </Button>
-                    <Button size="icon" variant="outline">
-                        <Trash size={16} />
-                        <span className="sr-only">Delete</span>
+                    <Button size="icon" variant="outline" asChild>
+                        <Link to={`/dashboard/user/${dataRes?.uuid}/delete`}>
+                            <Trash size={16} />
+                            <span className="sr-only">Delete</span>
+                        </Link>
                     </Button>
                 </div>
             </div>
