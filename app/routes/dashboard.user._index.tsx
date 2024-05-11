@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { Link, NavLink, useLoaderData, useLocation } from "@remix-run/react";
+import { Link, NavLink, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
 import { IUserService } from "~/service/user/IUserService";
@@ -45,14 +45,14 @@ export default function DashboardUserPage() {
     const { search } = useLocation()
     const page = new URLSearchParams(search).get("page")
     const dataRes: Page<UserItem> | undefined = data.data || undefined
+    const [initialData, setInitialData] = useState<Page<UserItem> | undefined>(dataRes)
+    const fetcher = useFetcher<{error: boolean, message: string, data: Page<UserItem> | undefined}>()
     const { toast } = useToast()
     useEffect(() => {
-        console.log(data)
-        console.log([...Array(dataRes?.totalPages)])
-        if (data != undefined) {
-            toast({ title: data.message, variant: data.error ? "destructive" : "default" })
+        if (fetcher.data != undefined) {
+            setInitialData(fetcher.data.data)
         }
-    }, [data])
+    }, [fetcher.data])
     return (
         <div className="flex flex-col w-full gap-4">
             <div className="flex items-center justify-between gap-4">
@@ -72,7 +72,7 @@ export default function DashboardUserPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data.data != undefined && (data.data as Page<UserItem>).content.map((userItem) => {
+                        {initialData && initialData.content.map((userItem) => {
                             return (
                                 <TableRow>
                                     <TableCell>
@@ -198,15 +198,15 @@ export default function DashboardUserPage() {
                     </TableBody>
                 </Table>
             </div>
-            {dataRes != undefined && <div className="flex items-center justify-between w-full">
+            {initialData && <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2 text-sm">
-                    <span className="hidden md:inline">Showing 1 to 5 of {dataRes.totalElements} entries</span>
+                    <span className="hidden md:inline">Showing 1 to 5 of {initialData.totalElements} entries</span>
                     <span className="md:hidden">Showing 1-5 of 100</span>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" disabled={dataRes.first}>Previous</Button>
-                    {[...Array(dataRes.totalPages).keys()].map((item) => <Button asChild variant={(Number(page || 0)) == item ? "default" : "outline"}><Link to={`/dashboard/user?page=${item}`}>{item + 1}</Link></Button>)}
-                    <Button variant="outline" disabled={dataRes.last}>Next</Button>
+                    <Button variant="outline" disabled={initialData.first}>Previous</Button>
+                    {[...Array(initialData.totalPages).keys()].map((item) => <Button onClick={() => fetcher.load(`/dashboard/user?page=${item}`)} variant={(Number(initialData.pageable.pageNumber || 0)) == item ? "default" : "outline"}>{item + 1}</Button>)}
+                    <Button variant="outline" disabled={initialData.last}>Next</Button>
                 </div>
             </div>}
         </div>
