@@ -85,7 +85,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
 
 const levelSelect: {value: string, label: string}[] = [
     {value: "ADMIN", label: "Administrator"},
-    {value: "PEMEGANG_EVENT", label: "Pemegang Event"},
+    {value: "PEMEGANG_ACARA", label: "Pemegang Acara"},
     {value: "USER", label: "User Biasa"},
 ]
 
