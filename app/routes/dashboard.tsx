@@ -16,6 +16,7 @@ import { DashboardHeader, DashboardMenu, useDashboardMobileSheet } from "~/compo
 
 export default function DashboardLayout() {
     const { handleSheet, DashboardMobileSheet } = useDashboardMobileSheet()
+    const {user} = useOutletContext<{user: UserClaim | undefined}>()
     return (
         <div className="grid min-h-screen w-full overflow-hidden lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
@@ -36,7 +37,7 @@ export default function DashboardLayout() {
                 <DashboardHeader handleSheet={handleSheet} />
                 <DashboardMobileSheet />
                 <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-                    <Outlet />
+                    <Outlet context={{user}} />
                 </main>
             </div>
         </div>

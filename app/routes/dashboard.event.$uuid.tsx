@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { Link, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useLocation, useMatches, useNavigation } from "@remix-run/react";
+import { Link, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useLocation, useMatches, useNavigation, useOutletContext } from "@remix-run/react";
 import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
@@ -22,6 +22,7 @@ import { levelName } from "~/utils/levelUtil";
 import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserClaim } from "~/data/entity/auth/UserClaim";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -75,6 +76,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
 export default function DashboardEventDetailPage() {
     const data = useLoaderData<typeof loader>()
     const actionData = useActionData<typeof action>()
+    const {user} = useOutletContext<{user: UserClaim | undefined}>()
     const matches = useMatches()
     const routeName = matches.at(-1)?.id.split(".").slice(3)[0]
     useEffect(() => {
@@ -88,7 +90,7 @@ export default function DashboardEventDetailPage() {
     const [qrRead, setQRRead] = useState("Not Found")
     const [modal, setModal] = useState<boolean>(false)
     const scanFetcher = useFetcher<typeof action>()
-    const dataContext = {eventRes}
+    const dataContext = {eventRes, user}
     const navigation = useNavigation()
     // if (data != undefined) {
     //     toast({ title: data.message, variant: data.error ? "destructive" : "default" })

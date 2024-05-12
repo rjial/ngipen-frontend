@@ -22,9 +22,15 @@ import { levelName } from "~/utils/levelUtil";
 import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserClaim } from "~/data/entity/auth/UserClaim";
 
 export default function DashboardEventDetailPage() {
-    const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
+    const {eventRes, user} = useOutletContext<{eventRes: Event | undefined, user: UserClaim | undefined}>()
+    useEffect(() => {
+        if (user != undefined) {
+            console.log(user)
+        }
+    }, [user])
     return (
         <TabsContent value="details">
             <div className="space-y-3">
@@ -33,12 +39,13 @@ export default function DashboardEventDetailPage() {
                         <h1 className="text-2xl font-bold">Detail</h1>
                     </div>
                     <div className="flex items-center gap-2">
+                        {user?.data.level == "ADMIN" ?
                         <Button asChild size="icon" variant={eventRes?.verifyEvent ? "outline" : "default"}>
                             <Link to={`/dashboard/event/${eventRes?.uuid}/verify`}>
                                 <Check size={16} />
                                 <span className="sr-only">Verify Event</span>
                             </Link>
-                        </Button>
+                        </Button> : <></>}
                         <Button asChild size="icon" variant="outline">
                             <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
                                 <Pencil size={16} />
