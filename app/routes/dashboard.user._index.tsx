@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, NavLink, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
-import { SearchIcon } from "lucide-react";
+import { Plus, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
@@ -57,9 +57,17 @@ export default function DashboardUserPage() {
         <div className="flex flex-col w-full gap-4">
             <div className="flex items-center justify-between gap-4">
                 <h1 className="text-2xl font-bold">User Management</h1>
-                <form className="flex items-center gap-4">
-                    <Input className="w-[300px] sm:w-[400px]" placeholder="Search..." type="search" />
-                </form>
+                <div className="flex justify-center space-x-3">
+                    <Button asChild size="icon" variant="outline">
+                        <Link to={`/dashboard/user/add`}>
+                            <Plus size={16} />
+                            <span className="sr-only">Add</span>
+                        </Link>
+                    </Button>
+                    <form className="flex items-center gap-4">
+                        <Input className="w-[300px] sm:w-[400px]" placeholder="Search..." type="search" />
+                    </form>
+                </div>
             </div>
             <div className="border rounded-lg shadow-sm">
                 <Table>
