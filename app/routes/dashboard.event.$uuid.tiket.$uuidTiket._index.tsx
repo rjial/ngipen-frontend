@@ -118,7 +118,7 @@ export default function DashboardEventTiketListPage() {
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Nama Pemilik Tiket</div>
-                            <div className="font-medium">{tiketRes.namaUser}</div>
+                            <div className="font-medium"><Link to={`/dashboard/user/${tiketRes.user.uuid}`}>{tiketRes.user.namaUser}</Link></div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi</div>

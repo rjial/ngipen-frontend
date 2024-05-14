@@ -1,7 +1,7 @@
 export interface TiketItemListResponse {
     uuid: string;
     statusTiket: boolean;
-    namaUser: string;
+    user: {uuid: string, namaUser: string};
     jenisTiket: string;
     event: string;
     date: string;
