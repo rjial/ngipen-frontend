@@ -63,9 +63,11 @@ export default function DashboardUserDetailPage() {
                     <h1 className="text-2xl font-bold">User Details</h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button size="icon" variant="outline">
-                        <Pencil size={16} />
-                        <span className="sr-only">Edit</span>
+                    <Button size="icon" variant="outline" asChild>
+                        <Link to={`/dashboard/user/${dataRes?.uuid}/edit`}>
+                            <Pencil size={16} />
+                            <span className="sr-only">Edit</span>
+                        </Link>
                     </Button>
                     <Button size="icon" variant="outline" asChild>
                         <Link to={`/dashboard/user/${dataRes?.uuid}/delete`}>

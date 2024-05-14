@@ -9,4 +9,5 @@ export interface UserService {
     getUser(data: {uuid: string, request: Request}): Promise<Response<UserItem>>
     deleteUser(data: {uuid: string, request: Request}): Promise<Response<string>>
     addUser(data: UserCreatedRequest, request: Request): Promise<Response<UserCreatedResponse>>
+    editUser(data: {data: UserCreatedRequest, uuid: string}, request: Request): Promise<Response<UserCreatedResponse>>
 }

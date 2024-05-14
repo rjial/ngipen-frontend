@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Select from 'react-select';
 import { UserCreatedRequest, UserCreatedRequestValidation } from "~/data/dto/user/UserCreatedRequest";
 import { UserCreatedResponse } from "~/data/dto/user/UserCreatedResponse";
+import { UserUpdatedRequest, UserUpdatedRequestValidation } from "~/data/dto/user/UserUpdatedRequest";
 import { UserItem } from "~/data/entity/auth/User";
 import { IUserService } from "~/service/user/IUserService";
 import { destroySession } from "~/sessions";
@@ -38,26 +39,28 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     }
 }
 
-export const action = async ({request}: ActionFunctionArgs) => {
+export const action = async ({request, params}: ActionFunctionArgs) => {
     const formData = await request.formData()
     const data = Object.fromEntries(formData)
     try {
-        const validation = UserCreatedRequestValidation.safeParse(data)
+        const uuidUser = params.uuid || ""
+        const validation = UserUpdatedRequestValidation.safeParse(data)
         if (!validation.success) {
             console.log(validation.error.format())
             return json({error: true, message: "Submit Failed", data: validation.error.format()})
         }
         const userService = new IUserService()
-        const payload: UserCreatedRequest = {
+        const payload: UserUpdatedRequest = {
             email: validation.data.email,
             name: validation.data.name,
             hp: validation.data.nohp,
             address: validation.data.address,
             level: validation.data.level,
-            password: validation.data.password,
+            password: data.password.toString(),
         }
         console.log(payload)
-        const res = await userService.addUser(payload, request)
+        // return json({error: true, message: payload.name, data: payload})
+        const res = await userService.editUser({data: payload, uuid: uuidUser}, request)
         if (res.status_code == 200) {
             return redirect("/dashboard/user")
         } else if (res.status_code == 401) {
@@ -101,12 +104,12 @@ export default function DashboardAddUserPage() {
             <div className="flex items-center justify-between gap-4">
                 <div className="flex justify-center items-center space-x-3">
                     <Button asChild size="icon" variant="outline">
-                        <Link to={`/dashboard/user/`}>
+                        <Link to={`/dashboard/user/${userData.uuid}`}>
                             <ArrowLeft size={16} />
                             <span className="sr-only">Back</span>
                         </Link>
                     </Button>
-                    <h1 className="text-2xl font-bold">Add User</h1>
+                    <h1 className="text-2xl font-bold">Edit User</h1>
                 </div>
             </div>
             <div className="border rounded-lg shadow-sm">
