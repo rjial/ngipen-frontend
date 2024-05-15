@@ -10,13 +10,13 @@ steps:
       - 'gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA'
 
   # Deploy to Cloud Run
-  - name: 'gcr.io/cloud-builders/gcloud:latest'
-    entrypoint: /bin/bash
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
       - '-c'
       - |
         gcloud run deploy ngipen-frontend \
           --image gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA \
           --region us-central1 \
-          --platform managed
+          --platform managed \
           --allow-unauthenticated
