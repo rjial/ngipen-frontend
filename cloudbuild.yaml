@@ -26,10 +26,6 @@ steps:
       - |
         gcloud run deploy ngipen-frontend \
           --image gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA \
-          --region ${_DEPLOY_REGION} \
+          --region us-central1 \
           --platform managed
           --allow-unauthenticated
-
-# Optional environment variables
-env:
-  - '_DEPLOY_REGION=us-central1'  # Set your desired region
