@@ -1,0 +1,38 @@
+# Define your service name (replace with your desired name)
+_SERVICE_NAME: my-nodejs-app
+
+steps:
+  # Install dependencies
+  - name: node:21-alpine
+    args: ['npm', 'install']
+
+  # Build the image using Buildpack
+  - name: 'gcr.io/buildpacks/builder:latest'
+    entrypoint: pack
+    args:
+      - build
+      - 'gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA'
+      - '--builder=gcr.io/buildpacks/builder:latest'  # Optional, specify builder image explicitly
+      - '--path=.'  # Path to your application code
+
+  # Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker:latest'
+    args:
+      - push
+      - 'gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud:latest'
+    entrypoint: /bin/bash
+    args:
+      - '-c'
+      - |
+        gcloud run deploy ngipen-frontend \
+          --image gcr.io/$PROJECT_ID/github.com/rjial/ngipen-frontend:$COMMIT_SHA \
+          --region ${_DEPLOY_REGION} \
+          --platform managed
+          --allow-unauthenticated
+
+# Optional environment variables
+env:
+  - '_DEPLOY_REGION=us-central1'  # Set your desired region
