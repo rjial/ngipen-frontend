@@ -11,3 +11,7 @@ export const handleDate = (date: string | Date = new Date()) => {
 export const handleDateTime = (dateTime: string) => {
     return dayjs(dateTime, 'YYYY-MM-DD HH:mm').format("dddd, DD MMMM YYYY HH:mm")
 }
+
+function getLocale() {
+    return (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.language;
+}
