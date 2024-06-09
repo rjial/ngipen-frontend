@@ -1,5 +1,5 @@
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useActionData, useFetcher, useLoaderData, useOutletContext, useSubmit } from "@remix-run/react";
 import { Calendar, CalendarIcon, MapPin, Minus, Plus, Slash } from "lucide-react";
 import { NavBar } from "~/components/common/Navbar";
@@ -51,7 +51,8 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         const data = await request.json() as OrderDataRequest
         const res = await orderService.order({uuid: uuid}, {orders: data.orders})
         if (res.status_code == 200) {
-            return json({error: false, message: "", data: res})
+            return redirect("/checkout")
+            // return json({error: false, message: "", data: res})
         } else {
             return json({error: true, message: res.message, data: {}})
         }
