@@ -1,6 +1,6 @@
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useActionData, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
+import { Link, useActionData, useFetcher, useLoaderData, useOutletContext, useSubmit } from "@remix-run/react";
 import { Calendar, CalendarIcon, MapPin, Minus, Plus, Slash } from "lucide-react";
 import { NavBar } from "~/components/common/Navbar";
 import { IEventService } from "~/service/events/IEventService.server";
@@ -20,6 +20,7 @@ import {
     PayloadLexicalReactRendererProps,
     PayloadLexicalReactRendererContent
 } from "@atelier-disko/payload-lexical-react-renderer";
+import { UserClaim } from "~/data/entity/auth/UserClaim";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     try {
@@ -63,6 +64,7 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 export default function EventItemPage() {
     const actionData = useActionData<typeof action>()
     const submit = useSubmit()
+    const {user} = useOutletContext<{user: UserClaim | undefined, checkoutCount: number}>()
     const toast = useToast()
     const {event, jenisTiket} = useLoaderData<typeof loader>()
     const [showBuyButton, setShowBuyButton] = useState(false)
@@ -189,8 +191,13 @@ export default function EventItemPage() {
                     <Card className="flex justify-between p-6 items-center">
                         <span className="font-semibold text-xl">Rp {total}</span>
                         <div className="flex space-x-3">
-                            <Button variant="secondary" onClick={() => handleClear()}>Clear</Button>
-                            <Button onClick={() => handleSubmitBeli(jenisTiketCount || [])}>Beli</Button>
+                            {user != undefined ? 
+                            <>
+                                <Button variant="secondary" onClick={() => handleClear()}>Clear</Button>
+                                <Button onClick={() => handleSubmitBeli(jenisTiketCount || [])}>Beli</Button>
+                            </> : <>
+                                <Button variant="default" asChild><Link to="/login">Login To Buy</Link></Button>
+                            </>}
                         </div>
                     </Card>
                 </div> : <></>}
