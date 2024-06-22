@@ -17,6 +17,7 @@ import { ExternalScriptsHandle } from "remix-utils/external-scripts";
 import { PaymentResponse as NgipenPaymentResponse, isPaymentResponse } from "~/data/dto/payment/PaymentResponse";
 import { getAuthSession } from "~/utils/authUtil";
 import { destroySession } from "~/sessions";
+import { handleCurrency } from "~/utils/numberUtil";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
     const checkoutService = new ICheckoutService()
@@ -64,7 +65,8 @@ export const action = async ({request}: ActionFunctionArgs) => {
             const res = await paymentService.payment({data: dataPayment, request})
             if (res.status_code == 200) {
                 console.log(res)
-                return json({error: false, message: res.message, data: res.data})
+                return redirect(`/payment/${res.data?.paymentTransaction.uuid}`)
+                // return json({error: false, message: res.message, data: res.data})
             } else if(res.status_code == 401) {
                 const session = await getAuthSession(request)
                 return redirect("/login", {
@@ -106,36 +108,36 @@ export default function CheckoutPage() {
     useEffect(() => {
         loaderData.error && toast({title: loaderData.message, variant: loaderData.error ? "destructive": "default", action: loaderData.error ? <ToastAction altText="Try Again" onClick={() => revalidate.revalidate()}>Try Again</ToastAction> : <></>})
     }, [loaderData])
-    useEffect(() => {
-        const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
-        if (snapScriptRef.current == undefined) {
-            snapScriptRef.current = document.createElement('script');
-            snapScriptRef.current.src = midtransScriptUrl
-        }
-        snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
-        document.body.appendChild(snapScriptRef.current)
+    // useEffect(() => {
+    //     const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
+    //     if (snapScriptRef.current == undefined) {
+    //         snapScriptRef.current = document.createElement('script');
+    //         snapScriptRef.current.src = midtransScriptUrl
+    //     }
+    //     snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
+    //     document.body.appendChild(snapScriptRef.current)
 
-        return () => {
-            if (snapScriptRef.current != undefined) {
-                document.body.removeChild(snapScriptRef.current)
-                snapScriptRef.current = undefined
-            }
-        }
-    }, [])
-    useEffect(() => {
-        if (updateFetcher.data != undefined) {
-            if (updateFetcher.data.error) {
-                toast({title: updateFetcher.data.message, variant: "destructive"})
-            } else {
-                if (isPaymentResponse(updateFetcher.data.data)) {
-                    // @ts-ignore
-                    snap.pay(updateFetcher.data.data.snap_token)
-                    console.log(updateFetcher.data.data)
-                }
-            }
-        } 
+    //     return () => {
+    //         if (snapScriptRef.current != undefined) {
+    //             document.body.removeChild(snapScriptRef.current)
+    //             snapScriptRef.current = undefined
+    //         }
+    //     }
+    // }, [])
+    // useEffect(() => {
+    //     if (updateFetcher.data != undefined) {
+    //         if (updateFetcher.data.error) {
+    //             toast({title: updateFetcher.data.message, variant: "destructive"})
+    //         } else {
+    //             if (isPaymentResponse(updateFetcher.data.data)) {
+    //                 // @ts-ignore
+    //                 snap.pay(updateFetcher.data.data.snap_token)
+    //                 console.log(updateFetcher.data.data)
+    //             }
+    //         }
+    //     } 
         
-    }, [updateFetcher.data])
+    // }, [updateFetcher.data])
     return (
         <div className="px-24 space-y-4">
             <NavBar />
@@ -162,7 +164,7 @@ export default function CheckoutPage() {
                                         <CardTitle>{item.event} - {item.jenisTiket.nama}</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex justify-between items.center">
-                                        <span>Rp {item.jenisTiket.harga} x {item.total}</span>
+                                        <span>{handleCurrency(item.jenisTiket.harga)} x {item.total}</span>
                                         <div className="flex items-center">
                                             <Minus onClick={() => handleCountChange({uuid: item.uuid, total: item.total - 1})} size={32} className="bg-secondary p-1 rounded-sm" />
                                             <span className="py-2 px-4">{item.total}</span>
@@ -184,8 +186,8 @@ export default function CheckoutPage() {
                                 loaderData.data && loaderData.data.length > 0 ? loaderData.data?.map(item => {
                                     return (
                                         <div key={item.uuid} className="flex justify-between pb-3 items-center">
-                                            <p>Rp {item.jenisTiket.harga} x {item.total}</p>
-                                            <p>Rp{item.jenisTiket.harga * item.total}</p>
+                                            <p>{handleCurrency(item.jenisTiket.harga)} x {item.total}</p>
+                                            <p>{handleCurrency(item.jenisTiket.harga * item.total)}</p>
                                         </div>
                                     )
                                 }) : <></>
@@ -193,7 +195,7 @@ export default function CheckoutPage() {
                             <Separator className="mb-3"/>
                             <div className="flex justify-between mb-3">
                                 <div>Total</div>
-                                <div>Rp {loaderData.data && loaderData.data.length > 0 ? loaderData.data?.reduce((countLast, item) => countLast + (item.jenisTiket.harga * item.total), 0) : 0}</div>
+                                <div>{handleCurrency(loaderData.data && loaderData.data.length > 0 ? loaderData.data?.reduce((countLast, item) => countLast + (item.jenisTiket.harga * item.total), 0) : 0)}</div>
                             </div>
                             <Button disabled={(loaderData.data || []).length <= 0} onClick={() => handlePayment(loaderData.data?.map<string>(item => item.uuid) || [])} className="w-full">Beli Sekarang</Button>
                          </CardContent>

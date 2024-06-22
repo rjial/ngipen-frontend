@@ -7,6 +7,7 @@ import { Page } from "~/data/entity/common/Page";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 
 export interface PaymentService {
+    pay(data: {uuid: string, request: Request}): Promise<Response<PaymentResponse>>
     payment(data: {data: PaymentRequest, request: Request}): Promise<Response<PaymentResponse>>
     getPayments(data: {request: Request}): Promise<Response<PaymentTransactionResponse[]>>
     getPayment(data: {uuid: string, request: Request}): Promise<Response<PaymentTransactionResponse>>

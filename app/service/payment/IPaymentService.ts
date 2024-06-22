@@ -8,6 +8,10 @@ import { Page } from "~/data/entity/common/Page";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 
 export class IPaymentService implements PaymentService {
+    pay(data: { uuid: string; request: Request; }): Promise<Response<PaymentResponse>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<PaymentResponse>(`/payment/pay/${data.uuid}`, data.request)
+    }
     getTiketsByPaymentTransactionAndEvent(data: { uuidEvent: string; uuidPt: string, page: number, size: number }, request: Request): Promise<Response<TiketItemListResponse[]>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<TiketItemListResponse[]>(`/payment/event/${data.uuidEvent}/paymenttransaction/${data.uuidPt}/tiket?page=${data.page}&size=${data.size}`, request)

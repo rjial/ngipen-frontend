@@ -21,6 +21,7 @@ import {
     PayloadLexicalReactRendererContent
 } from "@atelier-disko/payload-lexical-react-renderer";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
+import { handleCurrency } from "~/utils/numberUtil";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     try {
@@ -177,7 +178,7 @@ export default function EventItemPage() {
                             </ol>
                         </CardContent>
                         <CardFooter className="flex justify-between">
-                            <span>{item.harga}</span>
+                            <span>{handleCurrency(item.harga)}</span>
                             <div className="flex items-center">
                                 <Minus onClick={() => handleDecrementCount(item.id as number)} size={32} className="bg-secondary p-1 rounded-sm"/>
                                 <span className="py-2 px-4">{count?.count}</span>

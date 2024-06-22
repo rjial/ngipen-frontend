@@ -13,6 +13,8 @@ import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactio
 import { IPaymentService } from "~/service/payment/IPaymentService";
 import { destroySession } from "~/sessions";
 import { getAuthSession } from "~/utils/authUtil";
+import { handleDateTime } from "~/utils/dateUtil";
+import { handleCurrency } from "~/utils/numberUtil";
 
 export const meta: MetaFunction = () => {
     return [
@@ -132,7 +134,7 @@ export default function Index() {
                                         </Badge>
                                     </div>
                                     <div className="flex gap-3">
-                                        <Button onClick={() => handlePaymentProceed(paymentItem.snapToken)}>Proceed Payment</Button>
+                                        <Button asChild><Link to={`/payment/${paymentItem.uuid}`}>Proceed Payment</Link></Button>
                                         <Button variant="outline" asChild><Link to={`/payment-transaction/${paymentItem.uuid}`}>Details</Link></Button>
                                     </div>
                                 </div>
@@ -140,8 +142,8 @@ export default function Index() {
                             <CardContent>
 
                                 <div className="space-y-2">
-                                    <div className="text-sm text-gray-500">{paymentItem.date}</div>
-                                    <div className="text-lg font-medium">Rp {paymentItem.total}</div>
+                                    <div className="text-sm text-gray-500">{handleDateTime(paymentItem.date)}</div>
+                                    <div className="text-lg font-medium">{handleCurrency(paymentItem.total)}</div>
                                 </div>
                             </CardContent>
                             <CardFooter>
