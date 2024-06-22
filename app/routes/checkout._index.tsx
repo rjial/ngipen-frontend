@@ -64,9 +64,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
             }
             const res = await paymentService.payment({data: dataPayment, request})
             if (res.status_code == 200) {
-                console.log(res)
-                console.log("REDIRECT TO : " + `/payment/${res.data?.paymentTransaction.uuid}`)
-                return redirectDocument(`/payment/${res.data?.paymentTransaction.uuid}`)
+                return redirectDocument(`/payment/${res.data?.payment_transaction.uuid}`)
                 // return json({error: false, message: res.message, data: res.data})
             } else if(res.status_code == 401) {
                 const session = await getAuthSession(request)
