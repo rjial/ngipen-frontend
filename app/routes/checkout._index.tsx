@@ -1,7 +1,7 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect, redirectDocument } from "@remix-run/node";
 import { useActionData, useFetcher, useLoaderData, useOutletContext, useRevalidator } from "@remix-run/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
@@ -65,7 +65,8 @@ export const action = async ({request}: ActionFunctionArgs) => {
             const res = await paymentService.payment({data: dataPayment, request})
             if (res.status_code == 200) {
                 console.log(res)
-                return redirect(`/payment/${res.data?.paymentTransaction.uuid}`)
+                console.log("REDIRECT TO : " + `/payment/${res.data?.paymentTransaction.uuid}`)
+                return redirectDocument(`/payment/${res.data?.paymentTransaction.uuid}`)
                 // return json({error: false, message: res.message, data: res.data})
             } else if(res.status_code == 401) {
                 const session = await getAuthSession(request)
