@@ -6,8 +6,17 @@ import { PaymentRequest } from "~/data/dto/payment/PaymentRequest";
 import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactionResponse";
 import { Page } from "~/data/entity/common/Page";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
+import { PaymentHistory } from "~/data/dto/payment/PaymentHistory";
 
 export class IPaymentService implements PaymentService {
+    getPaymentTransactionPaymentGatewayStatus(data: { uuidEvent: string; }, request: Request): Promise<Response<string>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<string>(`/payment/${data.uuidEvent}/status`, request)
+    }
+    getPaymentTransactionHistories(data: { uuidEvent: string; }, request: Request): Promise<Response<PaymentHistory[]>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<PaymentHistory[]>(`/payment/${data.uuidEvent}/histories`, request)
+    }
     pay(data: { uuid: string; request: Request; }): Promise<Response<PaymentResponse>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<PaymentResponse>(`/payment/pay/${data.uuid}`, data.request)

@@ -14,6 +14,9 @@ dependencies:
   '@fontsource-variable/inter':
     specifier: ^5.0.17
     version: 5.0.17
+  '@fontsource/inter':
+    specifier: ^5.0.18
+    version: 5.0.18
   '@lexical/code':
     specifier: ^0.14.5
     version: 0.14.5
@@ -1353,6 +1356,10 @@ packages:
 
   /@fontsource-variable/inter@5.0.17:
     resolution: {integrity: sha512-sa80nNnqF8kzhBvqusWiL9vlPMVpdmOwMmDBup46Jggsr1VBqo+YuzwB36Ls+X6uHJtb8Yv3ALBHL/zGmT862A==}
+    dev: false
+
+  /@fontsource/inter@5.0.18:
+    resolution: {integrity: sha512-YCsoYPTcs713sI7tLtxaPrIhXAXvEetGg5Ry02ivA8qUOb3fQHojbK/X9HLD5OOKvFUNR2Ynkwb1kR1hVKQHpw==}
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:

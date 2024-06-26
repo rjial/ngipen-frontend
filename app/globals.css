@@ -76,10 +76,8 @@
   }
 }
 
-;
-
-body {
-  font-family: 'Inter Variable', sans-serif;
+html, body {
+  font-family: 'Inter', sans-serif;
 }
 .background-event {
   background-image: url("https://source.unsplash.com/S5DEUg2yUVU");

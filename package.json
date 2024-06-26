@@ -15,6 +15,7 @@
     "@alzera/react-scanner": "^1.0.6",
     "@atelier-disko/payload-lexical-react-renderer": "^1.0.4",
     "@fontsource-variable/inter": "^5.0.17",
+    "@fontsource/inter": "^5.0.18",
     "@lexical/code": "^0.14.5",
     "@lexical/link": "^0.14.5",
     "@lexical/list": "^0.14.5",

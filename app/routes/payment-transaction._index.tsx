@@ -4,7 +4,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { json, TypedResponse, type LoaderFunctionArgs, type MetaFunction, redirect } from "@remix-run/node";
+import { json, TypedResponse, type LoaderFunctionArgs, type MetaFunction, redirect, redirectDocument } from "@remix-run/node";
 import { Link, useLoaderData, useOutletContext } from "@remix-run/react";
 import { CircleIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -25,6 +25,17 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     try {
+        const url = new URL(request.url)
+        const uuidTransactionRedirect = url.searchParams.get("order_id") || undefined
+        if (uuidTransactionRedirect != undefined) {
+            const statusCodeTransactionRedirect = Number(url.searchParams.get("status_code") || 0)
+            if ( statusCodeTransactionRedirect > 0) {
+                const statusTransactionRedirect = url.searchParams.get("transaction_status") || undefined
+                if (statusTransactionRedirect != undefined) {
+                    return redirectDocument(`/payment-transaction/${uuidTransactionRedirect}?status_code=${statusCodeTransactionRedirect}&transaction_status=${statusTransactionRedirect}`)
+                }
+            }
+        }
         const paymentService = new IPaymentService()
         const res = await paymentService.getPayments({ request })
         console.log(res)
@@ -71,28 +82,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Index() {
     const { data } = useLoaderData<{error: boolean, message: string, data: PaymentTransactionResponse[]}>()
     const snapScriptRef = useRef<HTMLScriptElement>()
-    const handlePaymentProceed = async (snapToken: string) => {
-        // @ts-ignore
-        snap.pay(snapToken)
-    }
-    useEffect(() => {
-        if (data !== undefined) {
-            console.log(data)
-            const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
-            if (snapScriptRef.current == undefined) {
-                snapScriptRef.current = document.createElement('script');
-                snapScriptRef.current.src = midtransScriptUrl
-            }
-            snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
-            document.body.appendChild(snapScriptRef.current)
-        }
-        return () => {
-            if (snapScriptRef.current != undefined) {
-                document.body.removeChild(snapScriptRef.current)
-                snapScriptRef.current = undefined
-            }
-        }
-    }, [data])
+    // const handlePaymentProceed = async (snapToken: string) => {
+    //     // @ts-ignore
+    //     snap.pay(snapToken)
+    // }
+    // useEffect(() => {
+    //     if (data !== undefined) {
+    //         console.log(data)
+    //         const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
+    //         if (snapScriptRef.current == undefined) {
+    //             snapScriptRef.current = document.createElement('script');
+    //             snapScriptRef.current.src = midtransScriptUrl
+    //         }
+    //         snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
+    //         document.body.appendChild(snapScriptRef.current)
+    //     }
+    //     return () => {
+    //         if (snapScriptRef.current != undefined) {
+    //             document.body.removeChild(snapScriptRef.current)
+    //             snapScriptRef.current = undefined
+    //         }
+    //     }
+    // }, [data])
     return (
         <div className="px-24 space-y-10">
             <NavBar />
@@ -134,7 +145,7 @@ export default function Index() {
                                         </Badge>
                                     </div>
                                     <div className="flex gap-3">
-                                        <Button asChild><Link to={`/payment/${paymentItem.uuid}`}>Proceed Payment</Link></Button>
+                                        {paymentItem.status != "Accepted" ? <Button asChild><Link to={`/payment/${paymentItem.uuid}`}>Proceed Payment</Link></Button> : <></>}
                                         <Button variant="outline" asChild><Link to={`/payment-transaction/${paymentItem.uuid}`}>Details</Link></Button>
                                     </div>
                                 </div>

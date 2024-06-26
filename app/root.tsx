@@ -12,7 +12,11 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import globalStylesheet from "~/globals.css";
-import '@fontsource-variable/inter/wght.css';
+import '@fontsource/inter/100.css';
+import '@fontsource/inter/200.css';
+import '@fontsource/inter/300.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
 import { Toaster } from "@/components/ui/toaster";
 import { createAuthSession, getAuthSession, getAuthToken, getUserClaim } from "./utils/authUtil";
 import { ICheckoutService } from "./service/checkout/ICheckoutService";
