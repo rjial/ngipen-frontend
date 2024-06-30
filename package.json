@@ -50,6 +50,8 @@
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.10",
     "embla-carousel-react": "^8.0.2",
+    "eventsource": "^2.0.2",
+    "extended-eventsource": "^1.4.9",
     "isbot": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "lexical": "^0.14.5",
