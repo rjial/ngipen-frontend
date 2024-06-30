@@ -3,7 +3,7 @@ import { getSession } from "~/sessions";
 import { getAuthToken } from "~/utils/authUtil";
 
 export class FetchClient {
-    private getURL = (resource: string) => {
+    public getURL = (resource: string) => {
         const url = new URL(resource, process.env.NODE_ENV == "production" ? process.env.PRODUCTION_URL != undefined ? process.env.PRODUCTION_URL : "http://localhost:8080" : process.env.DEVELOPMENT_URL != undefined ? process.env.DEVELOPMENT_URL : "http://localhost:8080")
         console.log(process.env.IS_PRODUCTION)
         return url 

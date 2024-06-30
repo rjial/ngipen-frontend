@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate, useRevalidator } from "@remix-run/react";
 import { Calendar, MapPin } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
@@ -12,19 +12,26 @@ import { Page } from "~/data/entity/common/Page";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { destroySession } from "~/sessions";
-import { getAuthSession } from "~/utils/authUtil";
-import { handleDate } from "~/utils/dateUtil";
+import { getAuthSession, getAuthToken } from "~/utils/authUtil";
+import { handleDate, handleDateTime } from "~/utils/dateUtil";
 import { blobToBase64 } from "~/utils/fileUtil";
-
+import { IPaymentService } from "~/service/payment/IPaymentService";
+import { FetchClient } from "~/service/FetchClient.server";
+import { EventSource as EventSourceEx } from "extended-eventsource"
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const ticketService = new ITicketService()
+    const paymentService = new IPaymentService()
     try {
         const uuidTicket = params.uuid as string
         const res = await ticketService.getTiket({ uuid: uuidTicket, request: request })
         const qrRes = await ticketService.generateTiketQR(uuidTicket, request)
         if (res.status_code == 200) {
+            const fetchClient = new FetchClient()
+            const tiketStatusUrl = fetchClient.getURL(`/tiket/${uuidTicket}/status`)
+            const paymentStatus = await paymentService.getPaymentTransactionPaymentGatewayStatus({uuidEvent: res.data?.paymentTransaction || ""}, request)
+            const authToken = await getAuthToken(request)
             const base64 = await blobToBase64(qrRes)
-            return json({ error: false, message: res.message, data: {tiket: res.data, qrData: base64} })
+            return json({ error: false, message: res.message, data: {tiket: res.data, qrData: base64, paymentStatus: paymentStatus.data, tiketStatusUrl: tiketStatusUrl, authToken: authToken} })
         } else if(res.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -46,14 +53,61 @@ export default function TiketPage() {
     const { toast } = useToast()
     const imgQRRef = useRef<HTMLImageElement | null>(null)
     const imgQrId = useId()
+    const navigate = useNavigate()
+    let revalidator = useRevalidator();
+    let transactionStatus: {[key: string]: string} = {}
+    if (data?.paymentStatus != undefined) {
+        transactionStatus = JSON.parse(data?.paymentStatus)
+        console.log(transactionStatus)
+    }
+    
     const [qrCode, setQRCode] = useState(data.qrData)
     useEffect(() => {
+        let eventSource: EventSourceEx | undefined = undefined
         if (error) toast({ title: message, variant: error ? "destructive" : "default" })
+        if (data?.tiket != undefined && data?.tiket.statusVerifikasi == false) {
+            eventSource = new EventSourceEx(data?.tiketStatusUrl, {
+                headers: {
+                    'Authorization': `Bearer ${data?.authToken}`
+                },
+            })
+
+            eventSource.addEventListener("message", (event) => {
+                console.log("Message : " + event.data)
+
+            })
+
+            if (eventSource != undefined) {
+                eventSource.onmessage = (event) => {
+                    console.log("Message : " + event.data)
+                    if (event.data == "true") {
+                        toast({title: "Validasi Tiket", description: "Tiket telah terverifikasi"})
+                        eventSource?.close()
+                        navigate('.', { replace: true })
+                    }
+                }
+
+                eventSource.onopen = (event) => {
+                    console.log('Connection opened');
+                    console.log("Message : " + event.type)
+                };
+
+                eventSource.onerror = (error) => {
+                    console.error('Error occurred:', error);
+                };
+            }
+        }
+
+        return () => {
+            if (eventSource != undefined) {
+                eventSource.close()
+            }
+        }
     }, [data])
     return (
-        <div className="px-24 space-y-4">
+        <div className="px-24">
             <NavBar />
-            <Breadcrumb>
+            <Breadcrumb className="mt-10">
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink href="/">Home</BreadcrumbLink>
@@ -68,7 +122,7 @@ export default function TiketPage() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <div className="grid grid-cols-5 gap-6">
+            <div className="grid grid-cols-5 gap-6 mt-10">
                 <Card className="w-full col-span-4">
                     <CardHeader>
                         <CardTitle>{data?.tiket.event}</CardTitle>
@@ -76,25 +130,55 @@ export default function TiketPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1">
                                 <p className="text-gray-500 dark:text-gray-400">Ticket Type</p>
                                 <p className="font-medium">{data?.tiket.jenisTiket}</p>
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <p className="text-gray-500 dark:text-gray-400">Total</p>
                                 <p className="font-medium">Rp {data?.tiket.price}</p>
                             </div>
                         </div>
                         <Separator className="my-4" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            <div className="space-y-1">
                                 <p className="text-gray-500 dark:text-gray-400">Lokasi</p>
                                 <p className="font-medium">{data?.tiket.lokasi}</p>
                             </div>
-                            <div>
+                            <div className="space-y-1">
                                 <p className="text-gray-500 dark:text-gray-400">Total</p>
                                 <p className="font-medium">{data?.tiket.statusVerifikasi ? "Terverifikasi" : "Belum Terverifikasi"}</p>
                             </div>
+                        </div>
+                        <Separator className="my-4" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-gray-500 dark:text-gray-400">Payment Transaction</p>
+                                <div>
+                                    <Link className="font-medium" to={`/payment-transaction/${data?.tiket.paymentTransaction}`}>#{data?.tiket.paymentTransaction}</Link>
+                                </div>
+                            </div>
+                            {("transaction_time" in transactionStatus) ? (
+                            <div className="space-y-1">
+                                <p className="text-gray-500 dark:text-gray-400">Transaction Time</p>
+                                <p className="font-medium">{handleDateTime(transactionStatus.transaction_time)}</p>
+                            </div>
+                            ): <></>}
+                        </div>
+                        <Separator className="my-4" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {("transaction_status" in transactionStatus) ? (
+                            <div className="space-y-1">
+                                <p className="text-gray-500 dark:text-gray-400">Transaction Status</p>
+                                <p className="font-medium">{transactionStatus.transaction_status}</p>
+                            </div>
+                            ): <></>}
+                            {("payment_type" in transactionStatus) ? (
+                            <div className="space-y-1">
+                                <p className="text-gray-500 dark:text-gray-400">Payment Type</p>
+                                <p className="font-medium">{transactionStatus.payment_type}</p>
+                            </div>
+                            ): <></>}
                         </div>
                     </CardContent>
                     <CardFooter>
