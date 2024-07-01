@@ -26,7 +26,7 @@ export const NavBar: React.FC = () => {
   const {user, checkoutCount} = useOutletContext<{user: UserClaim | undefined, checkoutCount: number}>()
   return (<nav className="flex flex-row w-full justify-between py-4">
     <div className="flex flex-row items-center space-x-4">
-      <p className="font-semibold px-6">Ngipen</p>
+      <Link to="/" className="font-semibold px-6">Ngipen</Link>
       <Input type="text" placeholder="Search Ticket...." className="w-96" startIcon={Search} />
     </div>
     <div className="flex flex-row items-center space-x-4">
