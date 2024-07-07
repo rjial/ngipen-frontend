@@ -3,12 +3,14 @@ export interface Event {
     uuid: string;
     lokasi: string;
     desc: string;
-    persen: number;
     verifyEvent: boolean;
     pemegangEvent: string;
     tanggal_awal: string;
+    tanggal_akhir: string;
     waktu_awal: string;
     waktu_akhir: string;
+    headerimageurl: string;
+    itemimageurl: string;
 }
 
 export interface PemegangEvent {

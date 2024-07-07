@@ -19,7 +19,7 @@ export const PopularEvent: React.FC<PopularEventProp> = ({events}: PopularEventP
             <Suspense fallback={<LoaderCircle className={cn('my-28 h-16 w-16 text-primary/60 animate-spin')} />}>
                 <Await resolve={events}>
                     {(events) => events?.map((eventItem: Event, index: number) => (
-                        <EventCard key={eventItem.uuid} title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} price={eventItem.persen.toString()} uuid={eventItem.uuid} date={eventItem.tanggal_awal} waktuAwal={eventItem.waktu_awal} waktuAkhir={eventItem.waktu_akhir} />
+                        <EventCard key={eventItem.uuid} title={eventItem.name} desc={eventItem.desc} location={eventItem.lokasi} uuid={eventItem.uuid} date={eventItem.tanggal_awal} waktuAwal={eventItem.waktu_awal} waktuAkhir={eventItem.waktu_akhir} headerimageurl={eventItem.headerimageurl} itemimageurl={eventItem.itemimageurl} />
                     ))}
                 </Await>
             </Suspense>

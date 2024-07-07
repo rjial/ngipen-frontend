@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form, Link, NavLink, useActionData, useFetcher, useLoaderData, useLocation } from "@remix-run/react";
 import { ArrowLeft, Bold, CalendarIcon, Clock, Plus, SearchIcon } from "lucide-react";
-import React, { Suspense, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { RefObject, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { string } from "zod";
 import { UserItem } from "~/data/entity/auth/User";
 import { Page } from "~/data/entity/common/Page";
@@ -56,19 +56,34 @@ export const action = async ({request}: ActionFunctionArgs) => {
     try {
         const data = await Object.fromEntries(await request.formData())
         console.log(data)
-        const payload: AddEventRequest = {
-            name: data.name.toString(),
-            tanggalAwal: data.tanggal_awal.toString(),
-            waktuAwal: data.waktu_awal.toString(),
-            waktuAkhir: data.waktu_akhir.toString(),
-            lokasi: data.lokasi.toString(),
-            desc: data.desc.toString(),
-            persen: Number(data.persen.valueOf()),
-        }
-        const validation = AddEventRequestValidation.safeParse(payload)
-        if (!validation.success) return {error: true, message: validation.error.message, data: validation.error.format()}
+        // const payload: AddEventRequest = {
+        //     name: data.name.toString(),
+        //     tanggalAwal: data.tanggal_awal.toString(),
+        //     waktuAwal: data.waktu_awal.toString(),
+        //     waktuAkhir: data.waktu_akhir.toString(),
+        //     lokasi: data.lokasi.toString(),
+        //     desc: data.desc.toString(),
+        //     tanggalAkhir: data.tanggal_akhir.toString(),
+        //     headerImageUrl: data.headerImageUrl != null ? data.headerImageUrl as File : undefined,
+        //     itemImageUrl: data.itemImageUrl != null ? data.itemImageUrl as File : undefined
+        // }
+        const payloadFormData = new FormData()
+        payloadFormData.append('name', data.name.toString())
+        payloadFormData.append('tanggalAwal', data.tanggal_awal.toString())
+        payloadFormData.append('waktuAwal', data.waktu_awal.toString())
+        payloadFormData.append('waktuAkhir', data.waktu_akhir.toString())
+        payloadFormData.append('lokasi', data.lokasi.toString())
+        payloadFormData.append('desc', data.desc.toString())
+                payloadFormData.append('tanggalAkhir', data.tanggal_akhir != undefined ? data.tanggal_akhir.toString() : "")       
+        payloadFormData.append('headerImageUrl', data.headerImageUrl)
+        payloadFormData.append('itemImageUrl', data.itemImageUrl)
+        // const validation = AddEventRequestValidation.safeParse(payload)
+        // if (!validation.success){
+        //     console.log(validation.error.format())
+        //     return {error: true, message: validation.error.message, data: validation.error.format()}  
+        // } 
         const eventService = new IEventService()
-        const res = await eventService.insertEvent(validation.data, request)
+        const res = await eventService.insertEvent(payloadFormData, request)
         if (res.status_code == 200) {
             return redirect("/dashboard/event")
         } else {
@@ -88,18 +103,25 @@ export const action = async ({request}: ActionFunctionArgs) => {
 
 export default function DashboardEventAddPage() {
     const dataAction = useActionData<typeof action>()
-    const [date, setDate] = useState<Date>(new Date())
+    const [dateAwal, setDateAwal] = useState<Date>(new Date())
+    const [dateAkhir, setDateAkhir] = useState<Date>(new Date())
     const [timeAwal, setTimeAwal] = useState<Date>(new Date())
     const [timeAkhir, setTimeAkhir] = useState<Date>(new Date())
     const timeAwalFormatted = useMemo(() => dayjs(timeAwal).format("HH:mm"), [timeAwal])
     const timeAkhirFormatted = useMemo(() => dayjs(timeAkhir).format("HH:mm"), [timeAkhir])
     const { toast } = useToast()
-    const dateFormatted = useMemo(() => dayjs(date).format("YYYY-MM-DD"), [date])
+    const dateAwalFormatted = useMemo(() => dayjs(dateAwal).format("YYYY-MM-DD"), [dateAwal])
+    const dateAkhirFormatted = useMemo(() => dayjs(dateAkhir).format("YYYY-MM-DD"), [dateAkhir])
     const minuteAwalRef = useRef<HTMLInputElement>(null);
     const hourAwalRef = useRef<HTMLInputElement>(null);
     const minuteAkhirRef = useRef<HTMLInputElement>(null);
     const hourAkhirRef = useRef<HTMLInputElement>(null);
     const [descState, setDescState] = useState<string>("")
+    const headerImgRef = useRef<HTMLImageElement>(null)
+    const itemImgRef = useRef<HTMLImageElement>(null)
+    const [headerImgSrc, setHeaderImgSrc] = useState("")
+    const [itemImgSrc, setItemImgSrc] = useState("")
+    const [toggleTanggalAkhir, setToggleTanggalAkhir] = useState(false)
     const handleEditorState = useCallback((editorState: EditorState) => {
         // console.log(editorState.toJSON())
         setDescState(JSON.stringify(editorState.toJSON()))
@@ -112,6 +134,20 @@ export default function DashboardEventAddPage() {
             toast({title: dataAction.message, variant: dataAction.error ? "destructive" : "default"})
         }
     }, [dataAction])
+
+    const handleImagePreview = ({e, ref}: {e: React.ChangeEvent<HTMLInputElement>, ref: RefObject<HTMLImageElement> | undefined}) => {
+        if (ref?.current != null) {
+            console.log(e.target.files)
+            if (e.target.files?.length! > 0) {
+                let imgObject = e.target.files?.item(0);
+                if (imgObject != null || imgObject != undefined) {
+                    const objectUrl = URL.createObjectURL(imgObject)
+                    ref.current.src = objectUrl
+                }
+            }
+            // ref.src = e.target.files[0]
+        }
+    }
 
     return (
         <div className="flex flex-col w-full gap-4">
@@ -127,47 +163,72 @@ export default function DashboardEventAddPage() {
                 </div>
             </div>
             <div className="border rounded-lg shadow-sm">
-                <Form className="p-4 grid gap-4" method="POST" onSubmit={handleDisableEnter}>
+                <Form className="p-4 grid gap-4" method="POST" onSubmit={handleDisableEnter} encType="multipart/form-data">
                     <div className="grid gap-2">
                         <Label htmlFor="name">Event Name</Label>
                         <Input id="name" name="name" placeholder="Enter name" />
-                        {dataAction && dataAction.error && dataAction.data.name && <span className="text-[0.8rem] text-red-400">{dataAction.data.name._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.name && <span className="text-[0.8rem] text-red-400">{dataAction.data.name._errors[0]}</span>} */}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="lokasi">Location</Label>
                         <Input id="lokasi" name="lokasi" placeholder="Enter location" type="text" />
-                        {dataAction && dataAction.error && dataAction.data.lokasi && <span className="text-[0.8rem] text-red-400">{dataAction.data.lokasi._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.lokasi && <span className="text-[0.8rem] text-red-400">{dataAction.data.lokasi._errors[0]}</span>} */}
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="persen">Persen</Label>
-                        <Input id="persen" name="persen" placeholder="Enter persen" type="number" />
-                        {dataAction && dataAction.error && dataAction.data.persen && <span className="text-[0.8rem] text-red-400">{dataAction.data.persen._errors[0]}</span>}
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="persen">Tanggal Event</Label>
-                        <input type="hidden" name="tanggal_awal" value={dateFormatted} />
+                        <Label htmlFor="persen">Tanggal Awal Event</Label>
+                        <input type="hidden" name="tanggal_awal" value={dateAwalFormatted} />
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={"outline"}
                                     className={cn(
                                         "justify-start text-left font-normal",
-                                        !date && "text-muted-foreground"
+                                        !dateAwal && "text-muted-foreground"
                                     )}
                                 >
-                                    {date ? handleDate(date) : <span>Pick a date</span>}
+                                    {dateAwal ? handleDate(dateAwal) : <span>Pick a date</span>}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                     mode="single"
-                                    selected={date}
-                                    onSelect={(dateSelect) => setDate(dateSelect!)}
+                                    selected={dateAwal}
+                                    onSelect={(dateSelect) => setDateAwal(dateSelect!)}
                                     initialFocus
                                 />
                             </PopoverContent>
                         </Popover>
-                        {dataAction && dataAction.error && dataAction.data.tanggal_awal && <span className="text-[0.8rem] text-red-400">{dataAction.data.tanggal_awal._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.tanggal_awal && <span className="text-[0.8rem] text-red-400">{dataAction.data.tanggal_awal._errors[0]}</span>} */}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="persen">Tanggal Akhir Event</Label>
+                        <div className="flex space-x-4">
+                            <input type="hidden" name="tanggal_akhir" disabled={!toggleTanggalAkhir} value={dateAkhirFormatted} />
+                            <input type="checkbox" onChange={(e) => setToggleTanggalAkhir(e.target.checked)} value={toggleTanggalAkhir ? 1 : 0} name="toggle_tanggal_akhir" />
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        disabled={!toggleTanggalAkhir}
+                                        variant={"outline"}
+                                        className={cn(
+                                            "justify-start text-left font-normal w-full",
+                                            !dateAkhir && "text-muted-foreground"
+                                        )}
+                                    >
+                                        {dateAkhir ? handleDate(dateAkhir) : <span>Pick a date</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={dateAkhir}
+                                        onSelect={(dateSelect) => setDateAkhir(dateSelect!)}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        {/* {dataAction && dataAction.error && dataAction.data.tanggal_akhir && <span className="text-[0.8rem] text-red-400">{dataAction.data.tanggal_akhir._errors[0]}</span>} */}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="waktu_awal">Waktu Awal</Label>
@@ -192,7 +253,7 @@ export default function DashboardEventAddPage() {
                                 />
                             </div>
                         </div>
-                        {dataAction && dataAction.error && dataAction.data.waktu_awal && <span className="text-[0.8rem] text-red-400">{dataAction.data.waktu_awal._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.waktu_awal && <span className="text-[0.8rem] text-red-400">{dataAction.data.waktu_awal._errors[0]}</span>} */}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="waktu_akhir">Waktu Akhir</Label>
@@ -217,7 +278,19 @@ export default function DashboardEventAddPage() {
                                 />
                             </div>
                         </div>
-                        {dataAction && dataAction.error && dataAction.data.waktu_akhir && <span className="text-[0.8rem] text-red-400">{dataAction.data.waktu_akhir._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.waktu_akhir && <span className="text-[0.8rem] text-red-400">{dataAction.data.waktu_akhir._errors[0]}</span>} */}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="headerImageUrl">Header Image</Label>
+                        <img className="w-full h-96 object-cover rounded-lg" id="headerImg" ref={headerImgRef} />
+                        <Input id="headerImageUrl" name="headerImageUrl" placeholder="Upload a header image" type="file" onChange={(e) => handleImagePreview({e, ref: headerImgRef})} />
+                        {/* {dataAction && dataAction.error && dataAction.data.headerImageUrl && <span className="text-[0.8rem] text-red-400">{dataAction.data.headerImageUrl._errors[0]}</span>} */}
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="itemIma geUrl">Thumbnail Image</Label>
+                        <img className="w-64 h-64 object-cover rounded-lg" id="itemImg" ref={itemImgRef} />
+                        <Input id="itemImageUrl" name="itemImageUrl" placeholder="Upload a thumbnail image" type="file" onChange={(e) => handleImagePreview({e, ref: itemImgRef})}/>
+                        {/* {dataAction && dataAction.error && dataAction.data.itemImageUrl && <span className="text-[0.8rem] text-red-400">{dataAction.data.itemImageUrl._errors[0]}</span>} */}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="desc">Description</Label>
@@ -225,7 +298,7 @@ export default function DashboardEventAddPage() {
                         <Suspense fallback={<span>Loading Editor</span>}>
                             <EditorLexical handleChange={handleEditorState} />
                         </Suspense>
-                        {dataAction && dataAction.error && dataAction.data.desc && <span className="text-[0.8rem] text-red-400">{dataAction.data.desc._errors[0]}</span>}
+                        {/* {dataAction && dataAction.error && dataAction.data.desc && <span className="text-[0.8rem] text-red-400">{dataAction.data.desc._errors[0]}</span>} */}
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button variant="outline">Cancel</Button>
@@ -235,8 +308,4 @@ export default function DashboardEventAddPage() {
             </div>
         </div>
     )
-}
-
-function useLexicalComposerContext(): [any] {
-    throw new Error("Function not implemented.");
 }

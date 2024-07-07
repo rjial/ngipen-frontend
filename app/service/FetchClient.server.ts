@@ -8,9 +8,9 @@ export class FetchClient {
         console.log(process.env.IS_PRODUCTION)
         return url 
     }
-    private getHeader = async (request: Request | undefined): Promise<Headers> => {
+    private getHeader = async (request: Request | undefined, multipart: Boolean = false): Promise<Headers> => {
         const header = new Headers()
-        header.set('Content-Type', 'application/json')
+        if (!multipart) header.set('Content-Type', 'application/json')
         if (request instanceof Request) {
             const token = await getAuthToken(request);
             if (token !== undefined) header.append("Authorization", `Bearer ${token}`)
@@ -30,10 +30,10 @@ export class FetchClient {
         }
     }
 
-    async post<T, DTOType>(resource: string, body?: DTOType, request?: Request | undefined, config?: RequestInit | undefined): Promise<Response<T>> {
+    async post<T, DTOType = FormData>(resource: string, body?: DTOType | FormData, request?: Request | undefined, config?: RequestInit | undefined): Promise<Response<T>> {
         try {
             console.log("getURL", this)
-            const response = await fetch(this.getURL(resource), { ...config, headers: await this.getHeader(request), method: "POST", body: JSON.stringify(body) })
+            const response = await fetch(this.getURL(resource), { ...config, headers: await this.getHeader(request, body instanceof FormData), method: "POST", body: body instanceof FormData ? body : JSON.stringify(body) })   
             const data = await response.json()
             return new Response<T>(data.message, data.status_code, data.data)
         } catch (exc) {

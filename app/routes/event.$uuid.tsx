@@ -159,7 +159,7 @@ export default function EventItemPage() {
                     <div className="flex flex-row space-x-3"><MapPin className="text-sm" /><span>{event?.lokasi}</span></div>
                 </div>
             </div>
-            <img src="https://source.unsplash.com/U7HLzMO4SIY" alt="lorem ipsum" className="w-full h-96 rounded-lg object-cover"/>
+            <img src={event?.headerimageurl != undefined ? event.headerimageurl : "https://images.placeholders.dev/?width=320&height=320&text=" + event?.name + "&bgColor=%23f7f6f6&textColor=%236d6e71"} alt="lorem ipsum" className="w-full h-96 rounded-lg object-cover"/>
             <div className="w-full flex justify-center">
                 <span className="font-semibold text-2xl">Choose your ticket!</span>
             </div>

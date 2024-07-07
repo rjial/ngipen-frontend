@@ -15,9 +15,9 @@ export class IEventService implements EventService {
         const fetchClient = new FetchClient()
         return fetchClient.get<Event>(`/event/${uuid}/verify`, request)
     }
-    insertEvent(data: AddEventRequest, request: Request): Promise<Response<Event>> {
+    insertEvent(data: FormData, request: Request): Promise<Response<Event>> {
         const fetchClient = new FetchClient()
-        return fetchClient.post<Event, AddEventRequest>("/event", data, request)
+        return fetchClient.post<Event>("/event", data, request)
     }
     getTiketsByPemegangAcara(uuidEvent: string, page: number, size: number, request: Request): Promise<Response<Page<Tiket>>> {
         const fetchClient = new FetchClient()

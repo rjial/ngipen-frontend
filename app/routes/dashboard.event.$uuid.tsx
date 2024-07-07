@@ -70,7 +70,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
         } else {
             console.error(err)
         }
-    }
+    }   
 }
 
 export default function DashboardEventDetailPage() {

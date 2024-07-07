@@ -79,7 +79,7 @@ export default function DashboardEventDetailPage() {
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Event</div>
-                            <div className="font-medium">{handleDate(eventRes?.tanggal_awal || "")}</div>
+                            <div className="font-medium">{handleDate(eventRes?.tanggal_awal || "")} {eventRes?.tanggal_akhir != undefined ? " - " + handleDate(eventRes?.tanggal_akhir) : <></>}</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Waktu Event</div>

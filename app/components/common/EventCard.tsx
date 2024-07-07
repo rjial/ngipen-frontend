@@ -9,15 +9,16 @@ export type EventCardProps = {
     title: string,
     desc: string,
     location: string,
-    price: string,
     uuid: string,
     date: string,
     waktuAwal: string,
-    waktuAkhir: string
+    waktuAkhir: string,
+    headerimageurl: string,
+    itemimageurl: string
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ title, desc, location, price, uuid, date, waktuAwal, waktuAkhir }: EventCardProps) => (<Card className="w-72"><Link to={`/event/${uuid}`}>
-    <img src={getRandomPhoto()} alt="Card Image" className="w-full h-64 object-cover rounded-t-lg" />
+export const EventCard: React.FC<EventCardProps> = ({ title, desc, location, uuid, date, waktuAwal, waktuAkhir, headerimageurl, itemimageurl }: EventCardProps) => (<Card className="w-72"><Link to={`/event/${uuid}`}>
+    <img src={headerimageurl != undefined ? headerimageurl : "https://images.placeholders.dev/?width=320&height=320&text=" + title + "&bgColor=%23f7f6f6&textColor=%236d6e71"} alt="Card Image" className="w-full h-64 object-cover rounded-t-lg" />
     <CardHeader>
         <CardTitle>{title}</CardTitle>
     </CardHeader>
