@@ -85,7 +85,6 @@ export default function DashboardEventPage() {
                             <TableHead className="">Nama</TableHead>
                             <TableHead>Lokasi</TableHead>
                             <TableHead className="">Waktu</TableHead>
-                            <TableHead className="">UUID</TableHead>
                             <TableHead className="">Status</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -100,7 +99,7 @@ export default function DashboardEventPage() {
                                         alt="Avatar"
                                         className="rounded-full"
                                         height="32"
-                                        src="https://source.unsplash.com/U7HLzMO4SIY"
+                                        src={eventItem.itemimageurl != undefined ? eventItem.itemimageurl : "https://images.placeholders.dev/?width=320&height=320&text=" + eventItem.name + "&bgColor=%23f7f6f6&textColor=%236d6e71"}
                                         style={{
                                             aspectRatio: "32/32",
                                             objectFit: "cover",
@@ -112,8 +111,7 @@ export default function DashboardEventPage() {
                                 </Link>
                             </TableCell>
                             <TableCell>{eventItem.lokasi}</TableCell>
-                            <TableCell>{handleDate(eventItem.tanggal_awal)} ({eventItem.waktu_awal} - {eventItem.waktu_akhir})</TableCell>
-                            <TableCell>{eventItem.uuid}</TableCell>
+                            <TableCell>{handleDate(eventItem.tanggal_awal)} {eventItem.tanggal_akhir != undefined ? "- " + handleDate(eventItem.tanggal_akhir) : <></>} ({eventItem.waktu_awal} - {eventItem.waktu_akhir})</TableCell>
                             <TableCell>
                                 {eventItem.verifyEvent ? "Terverifikasi" : "Belum Terverifikasi"}
                             </TableCell>

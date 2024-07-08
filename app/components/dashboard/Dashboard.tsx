@@ -70,11 +70,12 @@ export const DashboardMenuItem: React.FC<PropsWithChildren<DashboardMenuItem>> =
 };
 
 export const DashboardMenu: React.FC = () => {
+    const { user } = useOutletContext<{ user: UserClaim | undefined, checkoutCount: number }>()
     return (
         <div className="flex-1 overflow-auto py-2">
             <nav className="grid items-start px-4 text-sm font-medium">
                 <DashboardMenuItem title="Home" icon={<Home size={16} />} to="/dashboard" />
-                <DashboardMenuItem title="Users" icon={<User size={16} />} to="/dashboard/user" />
+                {user?.data.level == "ADMIN" ? <DashboardMenuItem title="Users" icon={<User size={16} />} to="/dashboard/user" /> : <></>}
                 <DashboardMenuItem title="Events" icon={<CalendarClock size={16} />} to="/dashboard/event" />
                 {/* <DashboardMenuItem title="Product" icon={<Package size={16} />} to="/dashboard/">
                     <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>
@@ -125,7 +126,7 @@ export const useDashboardMobileSheet = () => {
                         <div className="flex-1 overflow-auto py-2">
                             <nav className="grid items-start px-4 text-sm font-medium">
                                 <DashboardMobileSheetItem title="Home" to="/dashboard" icon={<Home size={16} />} />
-                                <DashboardMobileSheetItem title="Users" to="/dashboard/user" icon={<User size={16} />} />
+                                {user?.data.level == "ADMIN" ? (<DashboardMobileSheetItem title="Users" to="/dashboard/user" icon={<User size={16} />} />) : <></>}
                                 <DashboardMobileSheetItem title="Events" to="/dashboard/event" icon={<CalendarClock size={16} />} />
                                 {/* <DashboardMobileSheetItem title="Products" to="/dashboard/user" icon={<Package size={16} />} /> */}
                                 {/* <DashboardMenuCollapsible title="Product Management" icon={<Package size={16} />}>

@@ -60,7 +60,7 @@ export default function DashboardEventDetailPage() {
                             alt="Avatar"
                             className="rounded-full"
                             height="48"
-                            src="https://source.unsplash.com/U7HLzMO4SIY"
+                            src={eventRes?.itemimageurl != undefined ? eventRes?.itemimageurl : "https://images.placeholders.dev/?width=320&height=320&text=" + eventRes?.name + "&bgColor=%23f7f6f6&textColor=%236d6e71"}
                             style={{
                                 aspectRatio: "48/48",
                                 objectFit: "cover",

@@ -91,7 +91,7 @@ export default function Index() {
   return (
     <div className="px-24 space-y-10">
       <NavBar />
-      <ImageGallery />
+      <ImageGallery events={initialData.length > 4 ? initialData.slice(0, 5) : initialData} />
       <InfiniteScroller loadNext={loadNext} loading={fetcher.state === "loading"}>
         <PopularEvent events={initialData} />
       </InfiniteScroller>

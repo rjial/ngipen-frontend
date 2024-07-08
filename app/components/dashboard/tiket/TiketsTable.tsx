@@ -13,7 +13,6 @@ const TiketsTable: React.FC<{
 }> = ({ eventRes, tiketRes, to = (uuidEvent, uuidTiket) => `/dashboard/event/${uuidEvent}/tiket/${uuidTiket}` }) => (<Table className="table-auto">
     <TableHeader>
         <TableRow>
-            <TableHead className="w-fit">UUID</TableHead>
             <TableHead className="">Nama Pemilik</TableHead>
             <TableHead className="">Event</TableHead>
             <TableHead className="">Jenis Tiket</TableHead>
@@ -25,9 +24,6 @@ const TiketsTable: React.FC<{
         {tiketRes && tiketRes.content.length > 0 ? tiketRes.content.map((tiketItem) => {
             return (
                 <TableRow>
-                    <TableCell>
-                        {tiketItem.uuid}
-                    </TableCell>
                     <TableCell>
                         <div className="flex items-center">
                             <div className="ml-2 font-medium">{tiketItem.user}</div>

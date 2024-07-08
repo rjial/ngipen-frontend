@@ -1,3 +1,5 @@
+import { JenisTiket } from "./JenisTiket";
+
 export interface Event {
     name: string;
     uuid: string;
@@ -11,6 +13,7 @@ export interface Event {
     waktu_akhir: string;
     headerimageurl: string;
     itemimageurl: string;
+    jenisTikets: JenisTiket[];
 }
 
 export interface PemegangEvent {

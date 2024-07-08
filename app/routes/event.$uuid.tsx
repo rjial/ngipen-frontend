@@ -155,7 +155,7 @@ export default function EventItemPage() {
             <div className="flex flex-col justify-center items-center pt-10 space-y-5">
                 <span className="font-semibold text-4xl">{event?.name}</span>
                 <div className="flex flex-row space-x-5">
-                    <div className="flex flex-row space-x-3"><Calendar className="text-sm" /><span>{handleDate(new Date(event?.tanggal_awal as string))}</span></div>
+                    <div className="flex flex-row space-x-3"><Calendar className="text-sm" /><span>{handleDate(new Date(event?.tanggal_awal as string))} {event?.tanggal_akhir != undefined ? "- " + handleDate(event?.tanggal_akhir) : <></>} ({event?.waktu_awal} - {event?.waktu_akhir})</span></div>
                     <div className="flex flex-row space-x-3"><MapPin className="text-sm" /><span>{event?.lokasi}</span></div>
                 </div>
             </div>

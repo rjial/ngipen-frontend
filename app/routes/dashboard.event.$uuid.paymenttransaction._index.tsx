@@ -83,7 +83,6 @@ export default function DashboardEventTiketListPage() {
                 <Table className="table-auto">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-fit">UUID</TableHead>
                             <TableHead className="">Total</TableHead>
                             <TableHead className="">Tanggal Pembelian</TableHead>
                             <TableHead className="">Nama Pembeli</TableHead>
@@ -95,9 +94,6 @@ export default function DashboardEventTiketListPage() {
                         {paymentRes && paymentRes.content.length > 0 ? paymentRes.content.map((paymentItem) => {
                             return (
                                 <TableRow>
-                                    <TableCell>
-                                        {paymentItem.uuid}
-                                    </TableCell>
                                     <TableCell>
                                         <div className="flex items-center">
                                             <div className="ml-2 font-medium">Rp {paymentItem.total}</div>
