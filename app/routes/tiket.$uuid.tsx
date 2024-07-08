@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useLoaderData, useNavigate, useRevalidator } from "@remix-run/react";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, CircleIcon, MapPin } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { NavBar } from "~/components/common/Navbar";
 import { Page } from "~/data/entity/common/Page";
@@ -18,6 +18,8 @@ import { blobToBase64 } from "~/utils/fileUtil";
 import { IPaymentService } from "~/service/payment/IPaymentService";
 import { FetchClient } from "~/service/FetchClient.server";
 import { EventSource as EventSourceEx } from "extended-eventsource"
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const ticketService = new ITicketService()
     const paymentService = new IPaymentService()
@@ -125,7 +127,13 @@ export default function TiketPage() {
             <div className="grid grid-cols-5 gap-6 mt-10">
                 <Card className="w-full col-span-4">
                     <CardHeader>
-                        <CardTitle>{data?.tiket.event}</CardTitle>
+                        <div className="flex items-center space-x-3">
+                            <CardTitle>{data?.tiket.event}</CardTitle>
+                            <Badge className={cn("bg-white dark:bg-gray-950 w-fit h-fit", data?.tiket.statusTiket ? "border-green-600" : "border-red-600")} variant="outline">
+                                <CircleIcon className={cn("h-3 w-3 -translate-x-1 animate-pulse ", data?.tiket.statusTiket ? "fill-green-300 text-green-300" : "fill-red-300 text-red-300")} />
+                                {data?.tiket.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
+                            </Badge>
+                        </div>
                         <CardDescription>{handleDate(data?.tiket.date)} - ({data?.tiket.waktu_awal} - {data?.tiket.waktu_akhir})</CardDescription>
                     </CardHeader>
                     <CardContent>

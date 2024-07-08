@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, CircleIcon, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { redirect } from "remix-typedjson";
 import { NavBar } from "~/components/common/Navbar";
@@ -17,6 +17,8 @@ import { getAuthSession } from "~/utils/authUtil";
 import { handleDate } from "~/utils/dateUtil";
 import { InfiniteScroller } from "~/components/common/InfiniteScroll";
 import { LoaderRes, LoaderResI } from "~/data/entity/common/LoaderRes";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const ticketService = new ITicketService()
@@ -91,7 +93,16 @@ export default function TiketPage() {
                         return (
                             <Card className="w-full">
                                 <CardHeader>
-                                    <CardTitle>{ticketItem.event}</CardTitle>
+                                    <div className="flex items-center space-x-3">
+                                        <CardTitle>
+                                            {ticketItem.event}
+                                        </CardTitle>
+                                        <Badge className={cn("bg-white dark:bg-gray-950 w-fit h-fit", ticketItem.statusTiket ? "border-green-600" : "border-red-600")} variant="outline">
+                                            <CircleIcon className={cn("h-3 w-3 -translate-x-1 animate-pulse ", ticketItem.statusTiket ? "fill-green-300 text-green-300" : "fill-red-300 text-red-300")} />
+                                            {ticketItem.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
+                                        </Badge>
+                                    </div>
+                                    
                                     <CardDescription>{handleDate(ticketItem.date)} - ({ticketItem.waktu_awal} - {ticketItem.waktu_akhir})</CardDescription>
                                 </CardHeader>
                                 <CardContent>
