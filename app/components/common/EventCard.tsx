@@ -40,7 +40,7 @@ export const EventCard: React.FC<EventCardProps> = ({ title, desc, location, uui
         {/* <p className="text-ellipsis overflow-hidden h-32">{desc}</p> */}
     </CardContent>
     <CardFooter className="flex flex-row justify-between">
-        <Button className="w-full">{startFrom > 0 ? "Start From " + handleCurrency(startFrom) : "Buy Now"}</Button>
+        <Button className="w-full">{startFrom > 0 ? "Start From " + handleCurrency(startFrom) : startFrom == 0 ? "Free" : "Buy Now"}</Button>
     </CardFooter>
 </Link>
 </Card>);

@@ -69,12 +69,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         const historiesRes = await paymentService.getPaymentTransactionHistories({uuidEvent: paymentTransactionUUID}, request)
         let histories: PaymentHistory[] | undefined = undefined
         if (statusRes.status_code == 200) {
-            console.log(statusRes.data)
             status = statusRes.data
         }
         if (historiesRes.status_code == 200) {
-            console.log(paymentTransactionUUID)
-            console.log(historiesRes.data)
             histories = historiesRes.data
         }
         return json({ error: false, message: res.message, data: {payment: res.data, fromPaymentRedirect: dataLoaderFromPaymentRedirect, paymentHistories: histories, paymentStatus: status} })

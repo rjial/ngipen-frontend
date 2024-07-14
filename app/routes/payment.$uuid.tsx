@@ -1,6 +1,6 @@
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { useToast } from "@/components/ui/use-toast"
-import { ActionFunctionArgs, LoaderFunctionArgs, SerializeFrom, json, redirect } from "@remix-run/node"
+import { ActionFunctionArgs, LoaderFunctionArgs, SerializeFrom, json, redirect, redirectDocument } from "@remix-run/node"
 import { useActionData, useFetcher, useLoaderData } from "@remix-run/react"
 import { useEffect, useRef, useState } from "react"
 import { NavBar } from "~/components/common/Navbar"
@@ -21,7 +21,11 @@ export const action = async ({request}: ActionFunctionArgs) => {
             const res = await paymentService.pay({uuid: payload.data.uuid, request: request})
             if (res.status_code == 200) {
                 console.log(res)
-                return json({ error: false, message: res.message, data: {key: data.key, data: res.data} , key: data.key})
+                if ((res.data?.payment_transaction.total || 0) > 0) {
+                    return json({ error: false, message: res.message, data: {key: data.key, data: res.data} , key: data.key})
+                } else {
+                    return redirectDocument(`/payment-transaction/${res.data?.payment_transaction.uuid}?status_code=200&transaction_status=settlement`)
+                }
             } else if(res.status_code == 401) {
                 const session = await getAuthSession(request)
                 return redirect("/login", {
