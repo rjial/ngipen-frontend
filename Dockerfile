@@ -1,47 +1,49 @@
-FROM node:21-alpine as base
+# base node image
+FROM node:18-bullseye-slim AS base
 
-FROM base as deps
+# set for base and all layer that inherit from it
+ENV NODE_ENV=production
 
-RUN mkdir /app
+# Install openssl for Prisma
+RUN apt-get update && apt-get install -y openssl sqlite3
 
-WORKDIR /app
+# Install all node_modules, including dev dependencies
+FROM base AS deps
+
+WORKDIR /myapp
 
 ADD package.json ./
-RUN npm install
+RUN npm install --include=dev
 
-FROM base as production-deps
+# Setup production node_modules
+FROM base AS production-deps
 
-ENV NODE_ENV production
+WORKDIR /myapp
 
-RUN mkdir /app
-WORKDIR /app
-
-COPY --from=deps /app/node_modules /app/node_modules
+COPY --from=deps /myapp/node_modules /myapp/node_modules
 ADD package.json ./
-RUN npm prune
+RUN npm prune --omit=dev
 
+# Build the app
+FROM base AS build
 
-FROM base as build
+WORKDIR /myapp
 
-RUN mkdir /app
-WORKDIR /app
-
-COPY --from=deps /app/node_modules /app/node_modules
-
+COPY --from=deps /myapp/node_modules /myapp/node_modules
 
 ADD . .
 RUN npm run build
 
+# Finally, build the production image with minimal footprint
 FROM base
 
-ENV NODE_ENV production
+ENV NODE_ENV="production"
 
-RUN mkdir /app
-WORKDIR /app
+WORKDIR /myapp
 
-COPY --from=production-deps /app/node_modules /app/node_modules
-COPY --from=build /app/build /app/build
-COPY --from=build /app/public /app/public
-ADD . .
+COPY --from=production-deps /myapp/node_modules /myapp/node_modules
+COPY --from=build /myapp/build /myapp/build
+COPY --from=build /myapp/public /myapp/public
+COPY --from=build /myapp/package.json /myapp/package.json
 
 CMD ["npm", "run", "start"]
