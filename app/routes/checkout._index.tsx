@@ -196,7 +196,7 @@ export default function CheckoutPage() {
                                 <div>Total</div>
                                 <div>{handleCurrency(loaderData.data && loaderData.data.length > 0 ? loaderData.data?.reduce((countLast, item) => countLast + (item.jenisTiket.harga * item.total), 0) : 0)}</div>
                             </div>
-                            <Button disabled={(loaderData.data || []).length <= 0} onClick={() => handlePayment(loaderData.data?.map<string>(item => item.uuid) || [])} className="w-full">Beli Sekarang</Button>
+                            <Button disabled={(loaderData.data || []).length <= 0 || updateFetcher.state == "loading" || updateFetcher.state == "submitting"} onClick={() => handlePayment(loaderData.data?.map<string>(item => item.uuid) || [])} className="w-full">Beli Sekarang</Button>
                          </CardContent>
                     </Card>
                 </div>

@@ -66,11 +66,13 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 export default function EventItemPage() {
     const actionData = useActionData<typeof action>()
     const submit = useSubmit()
+    const fetcher = useFetcher()
     const {user} = useOutletContext<{user: UserClaim | undefined, checkoutCount: number}>()
     const toast = useToast()
     const {event, jenisTiket} = useLoaderData<typeof loader>()
     const [showBuyButton, setShowBuyButton] = useState(false)
     const [jenisTiketCount, setJenisTiketCount] = useState(jenisTiket?.map(item => new JenisTiketCount(item)))
+    const [isBuyLoading, setiSBuyLoading] = useState(false)
     const contentDesc = JSON.parse(event?.desc!) as PayloadLexicalReactRendererContent
     const handleIncrementCount = (id: number) => {
         const data = jenisTiketCount?.map(i => {
@@ -109,7 +111,8 @@ export default function EventItemPage() {
             return {total: item.count, jenisTiket: item.jenistiket}
         })
         // @ts-ignore
-        submit({orders: newData}, { method: "POST", encType: "application/json" })
+        fetcher.submit({orders: newData}, { method: "POST", encType: "application/json" })
+        // submit({orders: newData}, { method: "POST", encType: "application/json" })
         handleClear()
     }
     const [total, setTotal] = useState(0)
@@ -196,7 +199,7 @@ export default function EventItemPage() {
                             {user != undefined ? 
                             <>
                                 <Button variant="secondary" onClick={() => handleClear()}>Clear</Button>
-                                <Button onClick={() => handleSubmitBeli(jenisTiketCount || [])}>Beli</Button>
+                                <Button disabled={fetcher.state == "loading" || fetcher.state == "submitting"} onClick={() => handleSubmitBeli(jenisTiketCount || [])}>Beli</Button>
                             </> : <>
                                 <Button variant="default" asChild><Link to="/login">Login To Buy</Link></Button>
                             </>}
