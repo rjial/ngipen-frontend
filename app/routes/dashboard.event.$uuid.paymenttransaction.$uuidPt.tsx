@@ -27,6 +27,7 @@ import { IPaymentService } from "~/service/payment/IPaymentService";
 import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactionResponse";
 import { TiketsTable } from "~/components/dashboard/tiket/TiketsTable";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
+import { UserCard } from "~/components/dashboard/user/UserCard";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -38,10 +39,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         const page = Number(url.searchParams.get("page")) || 0
 
         const paymentRes = await paymentService.getPaymentTransactionItemByEvent({uuidEvent: eventUuid, uuidPt: ptUuid}, request)
+        const userPaymentRes = await paymentService.getUserByPaymentTransactionAndEvent({uuidEvent: eventUuid, uuidPt: ptUuid}, request)
         if (paymentRes.status_code == 200) {
             const tiketsRes = await paymentService.getTiketsByPaymentTransactionAndEvent({uuidEvent: eventUuid, uuidPt: paymentRes.data?.uuid!, page: page, size: 10}, request)
-            console.log(tiketsRes)
-            return json({ error: false, message: paymentRes.message, data: {payment: paymentRes.data, tiket: tiketsRes.data} })
+            // console.log(tiketsRes)
+            console.log(userPaymentRes.data)
+            return json({ error: false, message: paymentRes.message, data: {payment: paymentRes.data, tiket: tiketsRes.data, user: userPaymentRes.data} })
         } else if(paymentRes.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -128,6 +131,12 @@ export default function DashboardEventPaymentTransactionItemPage() {
                                 </div>
                             </div>
                         </div>
+                        {data.data.user && <>
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-2xl font-bold">User</h1>
+                            </div>
+                            <UserCard dataRes={data.data.user} />
+                        </>}
                         <div className="flex items-center gap-4">
                             <h1 className="text-2xl font-bold">Tiket</h1>
                         </div>

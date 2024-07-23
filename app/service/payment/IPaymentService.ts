@@ -7,8 +7,13 @@ import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactio
 import { Page } from "~/data/entity/common/Page";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { PaymentHistory } from "~/data/dto/payment/PaymentHistory";
+import { UserItem } from "~/data/entity/auth/User";
 
 export class IPaymentService implements PaymentService {
+    getUserByPaymentTransactionAndEvent(data: { uuidEvent: string; uuidPt: string; }, request: Request): Promise<Response<UserItem>> {
+        const fetchClient = new FetchClient()
+        return fetchClient.get<UserItem>(`/payment/event/${data.uuidEvent}/paymenttransaction/${data.uuidPt}/user`, request)
+    }
     getPaymentTransactionPaymentGatewayStatus(data: { uuidEvent: string; }, request: Request): Promise<Response<string>> {
         const fetchClient = new FetchClient()
         return fetchClient.get<string>(`/payment/${data.uuidEvent}/status`, request)

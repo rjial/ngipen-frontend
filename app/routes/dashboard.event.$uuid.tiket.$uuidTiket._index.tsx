@@ -24,6 +24,7 @@ import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
+import { UserCard } from "~/components/dashboard/user/UserCard";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -36,7 +37,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
             if ((await getAuthSession(request)).get("error") != undefined) {
                 message = (await getAuthSession(request)).get("error") || ""
             }
-            return json({ error: false, message: tiketRes.message, data: {tiket: tiketRes.data, messageFlash: message == "" ? undefined : message} })
+            const userTiketRes = await tiketService.getUserFromTiket({uuid: tiketUuid}, request)
+            console.log(userTiketRes, "USER TIKET")
+            return json({ error: false, message: tiketRes.message, data: {tiket: tiketRes.data, user: userTiketRes.data, messageFlash: message == "" ? undefined : message} })
         } else if(tiketRes.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -46,17 +49,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
             })
         } else {
             const message = (await getAuthSession(request)).get("error") || ""
-            return json({ error: true, message: tiketRes.message, data: {tiket: undefined, messageFlash: message} })
+            return json({ error: true, message: tiketRes.message, data: {tiket: undefined, user: undefined, messageFlash: message} })
         }
     } catch(err) {
         const message = (await getAuthSession(request)).get("error") || ""
         // @ts-ignore
-        return json({ error: true, message: err.message, data: {tiket: undefined, messageFlash: message} })
+        return json({ error: true, message: err.message, data: {tiket: undefined, user: undefined, messageFlash: message} })
     }
 }
 
 export default function DashboardEventTiketListPage() {
-    const data = useLoaderData<typeof loader>()
+    const data = useLoaderData<{ error: false, message: string, data: {tiket: TiketItemListResponse | undefined, user: UserItem | undefined, messageFlash: string | undefined} } | { error: true, message: string, data: undefined}>()
     console.log(data)
     const {toast} = useToast()
     // @ts-ignore
@@ -68,10 +71,15 @@ export default function DashboardEventTiketListPage() {
     }, [tiketRes])
     const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
     useEffect(() => {
-        if(data.data.messageFlash != undefined) toast({title: data.data.messageFlash, variant: "destructive"})
-    }, [data.data.messageFlash])
+        if (data.error) {
+            toast({title: data.message, variant: "destructive"})
+        } else {
+            if(data.data.messageFlash != undefined) toast({title: data.data.messageFlash, variant: "destructive"})
+        }
+    }, [data])
     return (
         <>
+        {data.error ? <h1>Telah Terjadi error {data.message}</h1> : <>
         <div className="space-y-3">
            <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -84,15 +92,15 @@ export default function DashboardEventTiketListPage() {
                     <h1 className="text-2xl font-bold">Tiket</h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button asChild size="icon" variant={tiketRes?.statusTiket ? "destructive" : "default"}>
-                        <Link to={`/dashboard/event/${eventRes?.uuid}/tiket/${tiketRes?.uuid}/verify?status=${tiketRes?.statusTiket ? 0 : 1}`}>
+                    <Button asChild size="icon" variant={data.data.tiket?.statusTiket ? "destructive" : "default"}>
+                        <Link to={`/dashboard/event/${eventRes?.uuid}/tiket/${data.data.tiket?.uuid}/verify?status=${data.data.tiket?.statusTiket ? 0 : 1}`}>
                             <Check className="text-white" size={16} />
                             <span className="sr-only">Verify Tiket</span>
                         </Link>
                     </Button>
                 </div>
                 </div>
-                {tiketRes && 
+                {data.data.tiket && 
                 <div className="border rounded-lg shadow-sm">
                     <div className="flex items-center gap-4 p-4 border-b">
                         <img
@@ -114,37 +122,45 @@ export default function DashboardEventTiketListPage() {
                     <div className="p-4 grid md:grid-cols-3 gap-4">
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">UUID</div>
-                            <div className="font-medium">{tiketRes.uuid}</div>
+                            <div className="font-medium">{data.data.tiket.uuid}</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Nama Pemilik Tiket</div>
-                            <div className="font-medium"><Link to={`/dashboard/user/${tiketRes.user.uuid}`}>{tiketRes.user.namaUser}</Link></div>
+                            <div className="font-medium"><Link to={`/dashboard/user/${data.data.tiket.user.uuid}`}>{data.data.tiket.user.namaUser}</Link></div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi</div>
                             <div className="font-medium">
-                                {tiketRes.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
+                                {data.data.tiket.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
                             </div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Jenis Tiket</div>
-                            <div className="font-medium">{tiketRes.jenisTiket}</div>
+                            <div className="font-medium">{data.data.tiket.jenisTiket}</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Waktu Event</div>
-                            <div className="font-medium">{handleDate(tiketRes.date)} ({tiketRes.waktu_awal} - {tiketRes.waktu_akhir})</div>
+                            <div className="font-medium">{handleDate(data.data.tiket.date)} ({data.data.tiket.waktu_awal} - {data.data.tiket.waktu_akhir})</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Harga Tiket</div>
-                            <div className="font-medium">Rp {tiketRes.price}</div>
+                            <div className="font-medium">Rp {data.data.tiket.price}</div>
                         </div>
                         <div className="grid gap-1">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Payment Transaction</div>
-                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${tiketRes.paymentTransaction}`}>{tiketRes.paymentTransaction}</Link></div>
+                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${data.data.tiket.paymentTransaction}`}>{data.data.tiket.paymentTransaction}</Link></div>
                         </div>
+                        </div>
+                    </div>}
+                {(data.data.user != undefined) ? <>
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-2xl font-bold">User</h1>
                     </div>
-                </div> }
-            </div> 
+                    <UserCard dataRes={data.data.user} />
+                </> : <></>}
+            </div>
+        </>}
+        
         </>
     )
 }

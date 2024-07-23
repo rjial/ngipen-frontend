@@ -5,8 +5,13 @@ import {TicketService} from "./TicketService"
 import { FetchClient } from "../FetchClient.server";
 import { TiketVerificationPayloadRequest } from "~/data/dto/ticket/TiketVerificationPayloadRequest";
 import { Tiket } from "~/data/entity/ticket/Tiket";
+import { UserItem } from "~/data/entity/auth/User";
 
 export class ITicketService implements TicketService {
+    getUserFromTiket(data: { uuid: string; }, request: Request): Promise<Response<UserItem>> {
+        const fetchClient = new FetchClient();
+        return fetchClient.get<UserItem>(`/tiket/${data.uuid}/user`, request)
+    }
     verifyTiketByUUID(data: { uuid: string; status: boolean; request: Request }): Promise<Response<Tiket>> {
         const fetchClient = new FetchClient();
         return fetchClient.get<Tiket>(`/tiket/verify/${data.uuid}?status=${data.status ? 1 : 0}`, data.request)
