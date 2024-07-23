@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect, redirectDocument } from "@remix-run/node";
 import { Link, NavLink, Outlet, useActionData, useFetcher, useLoaderData, useLocation, useMatches, useNavigation, useOutletContext } from "@remix-run/react";
 import { ArrowLeft, CalendarDaysIcon, Pencil, PencilIcon, Plus, ScanLine, SearchIcon, Trash, UserPlusIcon } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
@@ -23,6 +23,8 @@ import { BarcodeScanner } from '@alzera/react-scanner';
 import { ITicketService } from "~/service/ticket/ITicketService";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -47,15 +49,18 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     }
 }
 
-export const action = async ({request}: ActionFunctionArgs) => {
+export const action = async ({request, params}: ActionFunctionArgs) => {
     const jsonPayload: {key: string, data: any} = await request.json()
+    const eventUuid = params.uuid || ""
     try {
         switch(jsonPayload.key) {
             case "scan-qr":
                 const ticketService = new ITicketService()
-                const res = await ticketService.scanTiketQR(jsonPayload.data, request)
+                const res = await ticketService.scanTiketQR({payload: jsonPayload.data.payload}, request)
                 console.log(res)
                 if (res.status_code == 200) {
+                    console.log(jsonPayload)
+                    if (jsonPayload.data.redirectToTiket) return redirectDocument(`/dashboard/event/${eventUuid}/tiket/${res.data?.uuid}`)
                     return json({error: true, message: res.message, data: res.data})
                 } else {
                     throw new Error(res.message)
@@ -86,6 +91,7 @@ export default function DashboardEventDetailPage() {
     // const page = new URLSearchParams(search).get("page")
     const eventRes: Event | undefined = data.data.event || undefined
     const jenisTiketRes: JenisTiket[] | undefined = data.data.jenisTiket || undefined
+    const [isRedirectToTiket, setIsRedirectToTiket] = useState(false)
     const { toast } = useToast()
     const [qrRead, setQRRead] = useState("Not Found")
     const [modal, setModal] = useState<boolean>(false)
@@ -102,13 +108,12 @@ export default function DashboardEventDetailPage() {
     const handlingQRRead = (dataQR: string) => {
         setQRRead(dataQR)
         const dataPayload = {
-            payload: dataQR
+            payload: dataQR,
+            redirectToTiket: isRedirectToTiket
         }
-        console.log(dataPayload)
         handlingOpenQR(false)
         scanFetcher.submit({key: "scan-qr", data: dataPayload}, {method: "POST", encType: "application/json"})
         if (scanFetcher.state == "submitting") {
-            console.log(scanFetcher.data)
             handlingOpenQR(false)
         }
         //process
@@ -146,6 +151,10 @@ export default function DashboardEventDetailPage() {
                         <AlertDialogContent>
                             <BarcodeScanner className="min-h-72 mb-10" onScan={(scan) => scan && handlingQRRead(scan)} />
                             {scanFetcher.state == "loading" ? "Loading" : ""}
+                            <div className="flex items-center">
+                                <Switch id="redirect-to-tiket" checked={isRedirectToTiket} onCheckedChange={(checked) => setIsRedirectToTiket(checked)} />
+                                <Label htmlFor="redirect-to-tiket">Redirect To Tiket</Label>
+                            </div>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction>Continue</AlertDialogAction>

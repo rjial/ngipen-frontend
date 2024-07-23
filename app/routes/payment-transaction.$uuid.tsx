@@ -190,9 +190,9 @@ export default function Index() {
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogHeader>
-                                            <CheckCircleIcon size={32} className="text-green-500 " />
-                                            <AlertDialogTitle>Success!</AlertDialogTitle>
-                                            <AlertDialogDescription>Your payment transaction was completed successfully.</AlertDialogDescription>
+                                            <CheckCircleIcon size={32} className={cn(dataLoader.data.fromPaymentRedirect.transaction_status == "settlement" ? "text-green-500" : dataLoader.data.fromPaymentRedirect.transaction_status == "closed" ? "text-yellow-500" : "")} />
+                                            <AlertDialogTitle>{dataLoader.data.fromPaymentRedirect.transaction_status == "settlement" ? "Success!" : dataLoader.data.fromPaymentRedirect.transaction_status == "closed" ? "Warning" : ""}</AlertDialogTitle>
+                                            <AlertDialogDescription>{dataLoader.data.fromPaymentRedirect.transaction_status == "settlement" ? "Your payment transaction was completed successfully." : dataLoader.data.fromPaymentRedirect.transaction_status == "closed" ? "Your payment transaction was didn't successfully." : ""}</AlertDialogDescription>
                                         </AlertDialogHeader>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

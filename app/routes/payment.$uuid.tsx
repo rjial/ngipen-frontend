@@ -119,7 +119,12 @@ export default function PaymentIndexPage() {
                         console.log(dataFetcher.data.data)
                         setTimeout(() => {
                             // @ts-ignore
-                            window.snap.pay(dataFetcher.data.data.snap_token)
+                            window.snap.pay(dataFetcher.data.data.snap_token, {
+                                onClose: function() {
+                                    let dataRes = dataLoader.data as PaymentTransactionResponse
+                                    window.location.href = `/payment-transaction/${dataRes.uuid}?status_code=200&transaction_status=closed`
+                                }
+                            })
                         }, 3000)
                     }
                 }
