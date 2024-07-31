@@ -28,6 +28,7 @@ import { PaymentTransactionResponse } from "~/data/dto/payment/PaymentTransactio
 import { TiketsTable } from "~/components/dashboard/tiket/TiketsTable";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { UserCard } from "~/components/dashboard/user/UserCard";
+import { string } from "zod";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -65,17 +66,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 }
 
 export default function DashboardEventPaymentTransactionItemPage() {
-    const data = useLoaderData<typeof loader>()
+    const data = useLoaderData<{error: true, message: string, data: undefined} | {error: false, message: string, data: {payment: PaymentTransactionResponse | undefined, tiket: Page<Tiket> | undefined, user: UserItem | undefined}}>()
     console.log(data)
-    const paymentRes: PaymentTransactionResponse | undefined = data.data.payment || undefined
-    const tiketRes: Page<Tiket> | undefined = data.data.tiket || undefined
     // useEffect(() => {
     //     if (typeof paymentRes != "undefined") {
     //         console.log(paymentRes)
     //     }
     // }, [paymentRes])
     const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
-    return (
+    return data.error ? (
+        <h1>Error : {data.message}</h1>
+    ) : (
         <>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -97,7 +98,7 @@ export default function DashboardEventPaymentTransactionItemPage() {
                     </Button> */}
                     </div>
                 </div>
-                {paymentRes && (
+                {data.data.payment && (
                     <>
                         <div className="border rounded-lg shadow-sm">
                             {/* <div className="flex items-center gap-4 p-4 border-b">
@@ -109,21 +110,21 @@ export default function DashboardEventPaymentTransactionItemPage() {
                             <div className="p-4 grid md:grid-cols-3 gap-4">
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">UUID</div>
-                                    <div className="font-medium">{paymentRes.uuid}</div>
+                                    <div className="font-medium">{data.data.payment.uuid}</div>
                                 </div>
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Bayar</div>
-                                    <div className="font-medium">Rp {paymentRes.total}</div>
+                                    <div className="font-medium">Rp {data.data.payment.total}</div>
                                 </div>
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">Status Pembayaran</div>
                                     <div className="font-medium">
-                                        {paymentRes.status}
+                                        {data.data.payment.status}
                                     </div>
                                 </div>
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">Nama Pembeli</div>
-                                    <div className="font-medium">{paymentRes.user}</div>
+                                    <div className="font-medium">{data.data.payment.user}</div>
                                 </div>
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">Created At</div>
@@ -141,7 +142,7 @@ export default function DashboardEventPaymentTransactionItemPage() {
                             <h1 className="text-2xl font-bold">Tiket</h1>
                         </div>
                         <div className="border rounded-lg shadow-sm">
-                            {eventRes && tiketRes && <TiketsTable eventRes={eventRes} tiketRes={tiketRes} />}
+                            {eventRes && data.data.tiket && <TiketsTable eventRes={eventRes} tiketRes={data.data.tiket} />}
                         </div>
                     </>)
                 }

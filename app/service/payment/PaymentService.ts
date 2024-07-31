@@ -17,6 +17,6 @@ export interface PaymentService {
     getPaymentTransactionPaymentGatewayStatus(data: {uuidEvent: string}, request: Request): Promise<Response<string>>
     getPaymentTransactionHistories(data: {uuidEvent: string}, request: Request): Promise<Response<PaymentHistory[]>>
     getPaymentTransactionItemByEvent(data: {uuidEvent: string, uuidPt: string}, request: Request): Promise<Response<PaymentTransactionResponse>>
-    getTiketsByPaymentTransactionAndEvent(data: {uuidEvent: string, uuidPt: string, page: number, size: number}, request: Request): Promise<Response<TiketItemListResponse[]>>
+    getTiketsByPaymentTransactionAndEvent(data: {uuidEvent: string, uuidPt: string, page: number, size: number}, request: Request): Promise<Response<Page<Tiket>>>
     getUserByPaymentTransactionAndEvent(data: {uuidEvent: string, uuidPt: string}, request: Request): Promise<Response<UserItem>>
 }

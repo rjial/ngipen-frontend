@@ -8,6 +8,7 @@ import { Page } from "~/data/entity/common/Page";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { PaymentHistory } from "~/data/dto/payment/PaymentHistory";
 import { UserItem } from "~/data/entity/auth/User";
+import { Tiket } from "~/data/entity/ticket/Tiket";
 
 export class IPaymentService implements PaymentService {
     getUserByPaymentTransactionAndEvent(data: { uuidEvent: string; uuidPt: string; }, request: Request): Promise<Response<UserItem>> {
@@ -26,9 +27,9 @@ export class IPaymentService implements PaymentService {
         const fetchClient = new FetchClient()
         return fetchClient.get<PaymentResponse>(`/payment/pay/${data.uuid}`, data.request)
     }
-    getTiketsByPaymentTransactionAndEvent(data: { uuidEvent: string; uuidPt: string, page: number, size: number }, request: Request): Promise<Response<TiketItemListResponse[]>> {
+    getTiketsByPaymentTransactionAndEvent(data: { uuidEvent: string; uuidPt: string, page: number, size: number }, request: Request): Promise<Response<Page<Tiket>>> {
         const fetchClient = new FetchClient()
-        return fetchClient.get<TiketItemListResponse[]>(`/payment/event/${data.uuidEvent}/paymenttransaction/${data.uuidPt}/tiket?page=${data.page}&size=${data.size}`, request)
+        return fetchClient.get<Page<Tiket>>(`/payment/event/${data.uuidEvent}/paymenttransaction/${data.uuidPt}/tiket?page=${data.page}&size=${data.size}`, request)
     }
     getPaymentTransactionItemByEvent(data: { uuidEvent: string; uuidPt: string; }, request: Request): Promise<Response<PaymentTransactionResponse>> {
         const fetchClient = new FetchClient()
