@@ -52,7 +52,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     if (statusCodeTransactionRedirect != undefined && statusTransactionRedirect != undefined) {
         dataLoaderFromPaymentRedirect = {payment: paymentTransactionUUID, status_code: statusCodeTransactionRedirect, transaction_status: statusTransactionRedirect}
     }
-    // const paymentService = new IPaymentService()
     try {
         const res = await paymentService.getPayment({uuid: paymentTransactionUUID, request: request })
         // console.log(res)
@@ -84,41 +83,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }
 }
 
-// export const clientLoader = async ({request, params, serverLoader}: ClientLoaderFunctionArgs) => {
-//     try {
-//         const paymentService = new IPaymentService()
-//         const serverData = await serverLoader<{error: boolean, message: string | undefined, data: DataLoaderPaymentTransaction | undefined}>()
-//         if (serverData.error) {
-//             return serverData
-//         } else {
-//             const statusRes = await paymentService.getPaymentTransactionPaymentGatewayStatus({uuidEvent: serverData.data?.payment.uuid || "-"}, request)
-//             let status: string | undefined = undefined
-//             const historiesRes = await paymentService.getPaymentTransactionHistories({uuidEvent: serverData.data?.payment.uuid || "-"}, request)
-//             let histories: PaymentHistory[] | undefined = undefined
-//             if (statusRes.status_code == 200) {
-//                 status = statusRes.data
-//             }
-//             if (historiesRes.status_code == 200) {
-//                 histories = historiesRes.data
-//             }
-//             return {...serverData, data: {...serverData.data, paymentHistories: histories, paymentStatus: status}}
-//         }
-//     } catch(err) {
-//         console.error(err)
-//         if (err instanceof Error) {
-//             return json({error: true, message: err.message, data: undefined})
-//         } else {
-//             return json({error: true, message: undefined, data: undefined})
-//         }
-//     }
-
-// }
-// clientLoader.hydrate = true;
-
-// export function HydrateFallback() {
-//     return <p>Skeleton rendered during SSR</p>; // (2)
-// }
-
 export default function Index() {
     const dataLoader = useLoaderData<{ error: boolean, message: string | undefined, data: DataLoaderPaymentTransaction | undefined }>()
     const snapScriptRef = useRef<HTMLScriptElement>()
@@ -141,24 +105,7 @@ export default function Index() {
             transactionStatus = JSON.parse(dataLoader.data?.paymentStatus || "{}")
         }
     }
-    // useEffect(() => {
-    //     if (data !== undefined) {
-    //         console.log(data)
-    //         const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
-    //         if (snapScriptRef.current == undefined) {
-    //             snapScriptRef.current = document.createElement('script');
-    //             snapScriptRef.current.src = midtransScriptUrl
-    //         }
-    //         snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
-    //         document.body.appendChild(snapScriptRef.current)
-    //     }
-    //     return () => {
-    //         if (snapScriptRef.current != undefined) {
-    //             document.body.removeChild(snapScriptRef.current)
-    //             snapScriptRef.current = undefined
-    //         }
-    //     }
-    // }, [data])
+    
     return (
         <div className="px-24">
             <NavBar />

@@ -82,28 +82,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Index() {
     const { data } = useLoaderData<{error: boolean, message: string, data: PaymentTransactionResponse[]}>()
     const snapScriptRef = useRef<HTMLScriptElement>()
-    // const handlePaymentProceed = async (snapToken: string) => {
-    //     // @ts-ignore
-    //     snap.pay(snapToken)
-    // }
-    // useEffect(() => {
-    //     if (data !== undefined) {
-    //         console.log(data)
-    //         const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';
-    //         if (snapScriptRef.current == undefined) {
-    //             snapScriptRef.current = document.createElement('script');
-    //             snapScriptRef.current.src = midtransScriptUrl
-    //         }
-    //         snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
-    //         document.body.appendChild(snapScriptRef.current)
-    //     }
-    //     return () => {
-    //         if (snapScriptRef.current != undefined) {
-    //             document.body.removeChild(snapScriptRef.current)
-    //             snapScriptRef.current = undefined
-    //         }
-    //     }
-    // }, [data])
     return (
         <div className="px-24 space-y-10">
             <NavBar />

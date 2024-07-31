@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ImageGallery } from "~/components/home/ImageGallery";
 import { useEffect, useRef, useState } from "react";
 import { Page } from "~/data/entity/common/Page";
+import { InfiniteScroller } from "~/components/common/InfiniteScroll";
 
 export const meta: MetaFunction = () => {
   return [
@@ -30,40 +31,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ res: res.data })
 }
 
-const InfiniteScroller = (props: {
-  children: any;
-  loading: boolean;
-  loadNext: () => void;
-}) => {
-  const { children, loading, loadNext } = props;
-  const scrollListener = useRef(loadNext);
-
-  useEffect(() => {
-    scrollListener.current = loadNext;
-  }, [loadNext]);
-
-  const onScroll = () => {
-    const documentHeight = document.documentElement.scrollHeight;
-    const scrollDifference = Math.floor(window.innerHeight + window.scrollY);
-    const scrollEnded = documentHeight == scrollDifference;
-
-    if (scrollEnded && !loading) {
-      scrollListener.current();
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", onScroll);
-    }
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  return <>{children}</>;
-};
 
 export default function Index() {
   const { res } = useLoaderData<typeof loader>()

@@ -26,38 +26,9 @@ import { rupiahMask } from "~/utils/maskUtil";
 import { useHookFormMask, withMask } from 'use-mask-input';
 import { AddJenisTiketRequest, AddJenisTiketRequestValidation } from "~/data/dto/event/AddJenisTiketRequest";
 
-// export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-//     const eventService = new IEventService()
-//     try {
-//         const eventUuid = params.uuid || ""
-//         const eventRes = await eventService.getEvent(eventUuid, request)
-//         if (eventRes.status_code == 200) {
-//             // const jenisTiketRes = await eventService.getJenisTiket(eventRes.data?.uuid!)
-//             return json({ error: false, message: eventRes.message, data: eventRes.data })
-//         } else if(eventRes.status_code == 401) {
-//             const session = await getAuthSession(request)
-//             return redirect("/login", {
-//                 headers: {
-//                     "Set-Cookie": await destroySession(session)
-//                 }
-//             })
-//         } else {
-//             return json({ error: true, message: eventRes.message, data: undefined })
-//         }
-//     } catch(err) {
-//         // @ts-ignore
-//         return json({ error: true, message: err.message, data: undefined })
-//     }
-//     // return json({})
-// }
-
 export const action = async ({request, params}: ActionFunctionArgs) => {
     const formData = await request.formData()
     const fromFormData: AddJenisTiketRequest = {name: formData.get("name")?.toString() as string, harga: Number(formData.get("harga"))}
-    // const payload: AddJenisTiketRequest = {
-    //     name: fromFormData.name as string,
-    //     harga: Number(fromFormData.harga)
-    // }
     try {
         const eventUuid = params.uuid || ""
         const validation = AddJenisTiketRequestValidation.safeParse(fromFormData)
@@ -65,7 +36,6 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
         if (!validation.success) return json({error: true, message: validation.error.message, data: validation.error.format()})
         const res = await eventService.insertJenisTiket(validation.data, eventUuid, request)
         if (res.status_code == 200) {
-            // return json({error: false, message: res.message, data: res.data})
             return redirect(`/dashboard/event/${eventUuid}/jenistiket`)
         } else if(res.status_code == 401) {
             const session = await getAuthSession(request)
@@ -86,23 +56,9 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 
 
 export default function DashboardEventAddJenisTiketPage() {
-    // const data = useLoaderData<typeof loader>()
     const actionData = useActionData<typeof action>()
-    // const rupiahMaskRef = useMaskito({options: rupiahMask})
-    // const { search } = useLocation()
-    // const page = new URLSearchParams(search).get("page")
-    // const eventRes: Event | undefined = data.data || undefined
-    // const jenisTiketRes: JenisTiket[] | undefined = data.data.jenisTiket || undefined
     const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
     const { toast } = useToast()
-    // if (data != undefined) {
-    //     toast({ title: data.message, variant: data.error ? "destructive" : "default" })
-    // }
-    // useEffect(() => {
-    //     if (data != undefined) {
-    //         toast({ title: data.message, variant: data.error ? "destructive" : "default" })
-    //     }
-    // }, [data])
     useEffect(() => {
         if (actionData != undefined) {
             toast({ title: actionData.message, variant: actionData.error ? "destructive" : "default" })

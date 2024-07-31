@@ -107,36 +107,6 @@ export default function CheckoutPage() {
     useEffect(() => {
         loaderData.error && toast({title: loaderData.message, variant: loaderData.error ? "destructive": "default", action: loaderData.error ? <ToastAction altText="Try Again" onClick={() => revalidate.revalidate()}>Try Again</ToastAction> : <></>})
     }, [loaderData])
-    // useEffect(() => {
-    //     const midtransScriptUrl = 'https://app.sandbox.midtrans.com/snap/snap.js';  
-    //     if (snapScriptRef.current == undefined) {
-    //         snapScriptRef.current = document.createElement('script');
-    //         snapScriptRef.current.src = midtransScriptUrl
-    //     }
-    //     snapScriptRef.current.setAttribute('data-client-key', "SB-Mid-client-vCLfQi6IOtcCIumG")
-    //     document.body.appendChild(snapScriptRef.current)
-
-    //     return () => {
-    //         if (snapScriptRef.current != undefined) {
-    //             document.body.removeChild(snapScriptRef.current)
-    //             snapScriptRef.current = undefined
-    //         }
-    //     }
-    // }, [])
-    // useEffect(() => {
-    //     if (updateFetcher.data != undefined) {
-    //         if (updateFetcher.data.error) {
-    //             toast({title: updateFetcher.data.message, variant: "destructive"})
-    //         } else {
-    //             if (isPaymentResponse(updateFetcher.data.data)) {
-    //                 // @ts-ignore
-    //                 snap.pay(updateFetcher.data.data.snap_token)
-    //                 console.log(updateFetcher.data.data)
-    //             }
-    //         }
-    //     } 
-        
-    // }, [updateFetcher.data])
     return (
         <div className="px-24 space-y-4">
             <NavBar />
