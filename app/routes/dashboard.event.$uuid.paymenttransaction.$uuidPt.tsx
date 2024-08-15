@@ -43,8 +43,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         const userPaymentRes = await paymentService.getUserByPaymentTransactionAndEvent({uuidEvent: eventUuid, uuidPt: ptUuid}, request)
         if (paymentRes.status_code == 200) {
             const tiketsRes = await paymentService.getTiketsByPaymentTransactionAndEvent({uuidEvent: eventUuid, uuidPt: paymentRes.data?.uuid!, page: page, size: 10}, request)
-            // console.log(tiketsRes)
-            console.log(userPaymentRes.data)
             return json({ error: false, message: paymentRes.message, data: {payment: paymentRes.data, tiket: tiketsRes.data, user: userPaymentRes.data} })
         } else if(paymentRes.status_code == 401) {
             const session = await getAuthSession(request)
@@ -57,22 +55,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
             return json({ error: true, message: paymentRes.message, data: undefined })
         }
 
-    //     const paymentsRes = await paymentService.getPaymentTransactionsByEvent({uuidEvent: eventUuid, page: page, size: 10}, request)
     } catch(err) {
         // @ts-ignore
         return json({ error: true, message: err.message, data: undefined })
     }
-    // return {}
 }
 
 export default function DashboardEventPaymentTransactionItemPage() {
     const data = useLoaderData<{error: true, message: string, data: undefined} | {error: false, message: string, data: {payment: PaymentTransactionResponse | undefined, tiket: Page<Tiket> | undefined, user: UserItem | undefined}}>()
-    console.log(data)
-    // useEffect(() => {
-    //     if (typeof paymentRes != "undefined") {
-    //         console.log(paymentRes)
-    //     }
-    // }, [paymentRes])
     const {eventRes} = useOutletContext<{eventRes: Event | undefined}>()
     return data.error ? (
         <h1>Error : {data.message}</h1>
@@ -90,23 +80,11 @@ export default function DashboardEventPaymentTransactionItemPage() {
                         <h1 className="text-2xl font-bold">Detail Payment Transaction</h1>
                     </div>
                     <div className="flex items-center gap-2">
-                        {/* <Button asChild size="icon" variTiketant="outline">
-                        <Link to={`/dashboard/event/${eventRes?.uuid}/jenistiket/add`}>
-                            <Plus size={16} />
-                            <span className="sr-only">Add</span>
-                        </Link>
-                    </Button> */}
                     </div>
                 </div>
                 {data.data.payment && (
                     <>
                         <div className="border rounded-lg shadow-sm">
-                            {/* <div className="flex items-center gap-4 p-4 border-b">
-                        <div>
-                            <div className="font-medium">{eventRes?.name}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{eventRes?.lokasi}</div>
-                        </div>
-                    </div> */}
                             <div className="p-4 grid md:grid-cols-3 gap-4">
                                 <div className="grid gap-1">
                                     <div className="text-sm text-gray-500 dark:text-gray-400">UUID</div>
