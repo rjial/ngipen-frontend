@@ -1,0 +1,2 @@
+export const barcodeDecoderOptions = {formats: ["code_128", "code_39", "code_93", "codabar", "ean_13", "ean_8", "itf", "upc_a", "upc_e", "linear_codes"]}
+export const qrDecoderOptions = {formats: ["qr_code", "rm_qr_code"]}

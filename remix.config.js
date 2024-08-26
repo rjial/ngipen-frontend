@@ -6,5 +6,13 @@ export default {
   // publicPath: "/build/",
   // serverBuildPath: "build/index.js",
   tailwind: true,
-  postcss: true
+  postcss: true,
+  browserNodeBuiltinsPolyfill: {
+    modules: {
+      path: true,
+      url: true,
+      zlib: true,
+      stream: true
+    }
+  }
 };

@@ -8,15 +8,23 @@ import { Tiket } from "~/data/entity/ticket/Tiket";
 import { UserItem } from "~/data/entity/auth/User";
 
 export class ITicketService implements TicketService {
+    generateTiketBarcode(uuid: string, request: Request): Promise<Blob> {
+        const fetchClient = new FetchClient();
+        return fetchClient.getBlob(`/tiket/${uuid}/barcode`, request)
+    }
+    scanTiketQR(data: TiketVerificationPayloadRequest, request: Request): Promise<Response<TiketItemListResponse>> {
+        const fetchClient = new FetchClient();
+        return fetchClient.post<TiketItemListResponse, TiketVerificationPayloadRequest>("/tiket/qrscan", data, request)
+    }
     getUserFromTiket(data: { uuid: string; }, request: Request): Promise<Response<UserItem>> {
         const fetchClient = new FetchClient();
         return fetchClient.get<UserItem>(`/tiket/${data.uuid}/user`, request)
     }
-    verifyTiketByUUID(data: { uuid: string; status: boolean; request: Request }): Promise<Response<Tiket>> {
+    verifyTiketByUUID(data: { uuid: string; status: boolean; request: Request }): Promise<Response<TiketItemListResponse>> {
         const fetchClient = new FetchClient();
-        return fetchClient.get<Tiket>(`/tiket/verify/${data.uuid}?status=${data.status ? 1 : 0}`, data.request)
+        return fetchClient.get<TiketItemListResponse>(`/tiket/verify/${data.uuid}?status=${data.status ? 1 : 0}`, data.request)
     }
-    scanTiketQR(data: TiketVerificationPayloadRequest, request: Request): Promise<Response<TiketItemListResponse>> {
+    verifyTiketQR(data: TiketVerificationPayloadRequest, request: Request): Promise<Response<TiketItemListResponse>> {
         const fetchClient = new FetchClient();
         return fetchClient.post<TiketItemListResponse, TiketVerificationPayloadRequest>("/tiket/verify", data, request)
     }

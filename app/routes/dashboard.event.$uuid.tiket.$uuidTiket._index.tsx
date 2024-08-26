@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tiket } from "~/data/entity/ticket/Tiket";
 import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
 import { UserCard } from "~/components/dashboard/user/UserCard";
+import DashboardDetailTiketCard from "~/components/dashboard/tiket/DashboardDetailTiketCard";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -100,58 +101,7 @@ export default function DashboardEventTiketListPage() {
                     </Button>
                 </div>
                 </div>
-                {data.data.tiket && 
-                <div className="border rounded-lg shadow-sm">
-                    <div className="flex items-center gap-4 p-4 border-b">
-                        <img
-                            alt="Avatar"
-                            className="rounded-full"
-                            height="48"
-                            src="https://source.unsplash.com/U7HLzMO4SIY"
-                            style={{
-                                aspectRatio: "48/48",
-                                objectFit: "cover",
-                            }}
-                            width="48"
-                        />
-                        <div>
-                            <div className="font-medium">{eventRes?.name}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{eventRes?.lokasi}</div>
-                        </div>
-                    </div>
-                    <div className="p-4 grid md:grid-cols-3 gap-4">
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">UUID</div>
-                            <div className="font-medium">{data.data.tiket.uuid}</div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Nama Pemilik Tiket</div>
-                            <div className="font-medium"><Link to={`/dashboard/user/${data.data.tiket.user.uuid}`}>{data.data.tiket.user.namaUser}</Link></div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Status Verifikasi</div>
-                            <div className="font-medium">
-                                {data.data.tiket.statusTiket ? "Terverifikasi" : "Belum Terverifikasi"}
-                            </div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Jenis Tiket</div>
-                            <div className="font-medium">{data.data.tiket.jenisTiket}</div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Waktu Event</div>
-                            <div className="font-medium">{handleDate(data.data.tiket.date)} ({data.data.tiket.waktu_awal} - {data.data.tiket.waktu_akhir})</div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Harga Tiket</div>
-                            <div className="font-medium">Rp {data.data.tiket.price}</div>
-                        </div>
-                        <div className="grid gap-1">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">Payment Transaction</div>
-                            <div className="font-medium"><Link to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction/${data.data.tiket.paymentTransaction}`}>{data.data.tiket.paymentTransaction}</Link></div>
-                        </div>
-                        </div>
-                    </div>}
+                {eventRes && data.data.tiket && <DashboardDetailTiketCard tiket={data.data.tiket} event={eventRes} />}
                 {(data.data.user != undefined) ? <>
                     <div className="flex items-center gap-4">
                         <h1 className="text-2xl font-bold">User</h1>

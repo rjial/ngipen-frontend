@@ -25,6 +25,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserClaim } from "~/data/entity/auth/UserClaim";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { TiketItemListResponse } from "~/data/dto/ticket/TiketItemListResponse";
+import DashboardDetailTiketCard from "~/components/dashboard/tiket/DashboardDetailTiketCard";
+import { Tiket } from "~/data/entity/ticket/Tiket";
+import { barcodeDecoderOptions, qrDecoderOptions } from "~/utils/barcodeUtil";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const eventService = new IEventService()
@@ -53,18 +57,53 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
     const jsonPayload: {key: string, data: any} = await request.json()
     const eventUuid = params.uuid || ""
     try {
+        const ticketService = new ITicketService()
         switch(jsonPayload.key) {
-            case "scan-qr":
-                const ticketService = new ITicketService()
-                const res = await ticketService.scanTiketQR({payload: jsonPayload.data.payload}, request)
+            case "verify-qr":
+                const res = await ticketService.verifyTiketQR({payload: jsonPayload.data.payload}, request)
                 console.log(res)
                 if (res.status_code == 200) {
                     console.log(jsonPayload)
-                    if (jsonPayload.data.redirectToTiket) return redirectDocument(`/dashboard/event/${eventUuid}/tiket/${res.data?.uuid}`)
-                    return json({error: true, message: res.message, data: res.data})
+                    return {error: false, message: res.message, data: {key: "verify-qr", data: {tiket: res.data}}}
                 } else {
-                    throw new Error(res.message)
+                    return {error: true, message: res.message, data: undefined}
                 }
+                break
+            case "scan-qr":
+                const resScanQr = await ticketService.scanTiketQR({payload: jsonPayload.data.payload}, request)
+                console.log(resScanQr)
+                if (resScanQr.status_code == 200) {
+                    console.log(jsonPayload)
+                    return {error: false, message: resScanQr.message, data: {key: "scan-qr", data: {tiket: resScanQr.data}}}
+                } else {
+                    return {error: true, message: resScanQr.message, data: undefined}
+                }
+                break
+            case "scan-barcode":
+                const jsonBarcode: {payload: string} = jsonPayload.data
+                const resBarcode = await ticketService.getTiket({uuid: jsonBarcode.payload, request: request})
+                // const resBarcode = await ticketService.verifyTiketByUUID({uuid: jsonBarcode.payload, status: true, request: request})
+                switch(resBarcode.status_code) {
+                    case 200:
+                        return {error: false, message: resBarcode.message, data: {key: "scan-barcode", data: {tiket: resBarcode.data}}}
+                        break
+                    default:
+                        return {error: true, message: resBarcode.message, data: undefined}
+                        break
+                }
+                break
+            case "verify-barcode":
+                const jsonVerifyBarcode: {payload: string} = jsonPayload.data
+                const resVerifyBarcode = await ticketService.verifyTiketByUUID({uuid: jsonVerifyBarcode.payload, status: true, request})
+                switch(resVerifyBarcode.status_code) {
+                    case 200:
+                        return {error: false, message: resVerifyBarcode.message, data: {key: "verify-barcode", data: {tiket: resVerifyBarcode.data}}}
+                        break
+                    default:
+                        return {error: true, message: resVerifyBarcode.message, data: undefined}
+                        break
+                }
+                break
             default:
                 console.log(jsonPayload)
                 return json({error: true, message: "Default case", data: undefined})
@@ -79,8 +118,16 @@ export const action = async ({request, params}: ActionFunctionArgs) => {
 }
 
 export default function DashboardEventDetailPage() {
-    const data = useLoaderData<typeof loader>()
-    const actionData = useActionData<typeof action>()
+    const data = useLoaderData<
+        {error: true, message: string | undefined, data: undefined} |
+        {error: false, message: string | undefined, data: {event: Event}}>()
+    const actionData = useActionData<
+        {error: true, message: string | undefined, data: undefined} |
+        {error: false, message: string | undefined, data: {key: "scan-barcode", data: {tiket: TiketItemListResponse}}} |
+        {error: false, message: string | undefined, data: {key: "verify-barcode", data: {tiket: TiketItemListResponse}}} |
+        {error: false, message: string | undefined, data: {key: "verify-qr", data: {tiket: TiketItemListResponse}}} |
+        {error: false, message: string | undefined, data: {key: "scan-qr", data: {tiket: TiketItemListResponse}}}
+        >()
     const {user} = useOutletContext<{user: UserClaim | undefined}>()
     const matches = useMatches()
     const routeName = matches.at(-1)?.id.split(".").slice(3)[0]
@@ -89,34 +136,60 @@ export default function DashboardEventDetailPage() {
     }, [matches])
     // const { search } = useLocation()
     // const page = new URLSearchParams(search).get("page")
-    const eventRes: Event | undefined = data.data.event || undefined
-    const jenisTiketRes: JenisTiket[] | undefined = data.data.jenisTiket || undefined
+    // const eventRes: Event | undefined = data.data.event || undefined
+    // const jenisTiketRes: JenisTiket[] | undefined = data.data.jenisTiket || undefined
     const [isRedirectToTiket, setIsRedirectToTiket] = useState(false)
+    const [isBarcodeWithCamera, setIsBarcodeWithCamera] = useState(false)
+    const [isBarcodeAutoVerify, setIsBarcodeAutoVerify] = useState(true)
+    const [barcodeValue, setBarcodeValue] = useState("")
+    const [isQRAutoVerify, setIsQRAutoVerify] = useState(true)
     const { toast } = useToast()
     const [qrRead, setQRRead] = useState("Not Found")
     const [modal, setModal] = useState<boolean>(false)
     const scanFetcher = useFetcher<typeof action>()
-    const dataContext = {eventRes, user}
+    const [tiketScanned, setTiketScanned] = useState<TiketItemListResponse | undefined>(undefined)
+    // const dataContext = {eventRes, user}
     const navigation = useNavigation()
     // if (data != undefined) {
     //     toast({ title: data.message, variant: data.error ? "destructive" : "default" })
     // }
     const handlingOpenQR = (open: boolean) => {
         setQRRead("")
+        setBarcodeValue("")
+        setTiketScanned(undefined)
         setModal(open)
     }
-    const handlingQRRead = (dataQR: string) => {
+    const handlingQRVerify = (dataQR: string) => {
         setQRRead(dataQR)
         const dataPayload = {
             payload: dataQR,
-            redirectToTiket: isRedirectToTiket
         }
-        handlingOpenQR(false)
-        scanFetcher.submit({key: "scan-qr", data: dataPayload}, {method: "POST", encType: "application/json"})
-        if (scanFetcher.state == "submitting") {
-            handlingOpenQR(false)
-        }
+        // handlingOpenQR(false)
+        scanFetcher.submit({key: "verify-qr", data: dataPayload}, {method: "POST", encType: "application/json"})
         //process
+    }
+    const handlingQRScan = (dataQR: string) => {
+        setQRRead(dataQR)
+        const dataPayload = {
+            payload: dataQR,
+        }
+        // handlingOpenQR(false)
+        scanFetcher.submit({key: "scan-qr", data: dataPayload}, {method: "POST", encType: "application/json"})
+        //process
+    }
+    const handlingBarcodeRead = (dataBarcode: string) => {
+        // setBarcodeValue(dataBarcode)
+        const dataPayload = {
+            payload: dataBarcode,
+        }
+        scanFetcher.submit({key: "scan-barcode", data: dataPayload}, {method: "POST", encType: "application/json"})
+    }
+    const handlingBarcodeVerify = (dataBarcode: string) => {
+        // setBarcodeValue(dataBarcode)
+        const dataPayload = {
+            payload: dataBarcode
+        }
+        scanFetcher.submit({key: "verify-barcode", data: dataPayload}, {method: "POST", encType: "application/json"})
     }
     // useEffect(() => {
     //     if (data != undefined) {
@@ -124,8 +197,31 @@ export default function DashboardEventDetailPage() {
     //     }
     // }, [data])
     useEffect(() => {
-        if (scanFetcher.data != undefined) {
-            toast({ title: scanFetcher.data.message, variant: scanFetcher.data.error ? "destructive" : "default" })
+        const res = scanFetcher.data as typeof actionData
+        console.log(res?.message)
+        if (res != undefined) {
+            if (res.error) {
+                toast({ title: res.message, variant: "destructive"})
+            } else {
+                setBarcodeValue("")
+                if (res.data.key == "scan-barcode") {
+                    setTiketScanned(res.data.data.tiket)
+                    if (isBarcodeAutoVerify) {
+                        handlingBarcodeVerify(res.data.data.tiket.uuid)
+                    }
+                } else if (res.data.key == "verify-barcode") {
+                    toast({ title: res.message, variant: "default"})
+                    setTiketScanned(res.data.data.tiket)
+                } else if (res.data.key == "scan-qr") {
+                    setTiketScanned(res.data.data.tiket)
+                    if (isQRAutoVerify) {
+                        handlingQRScan(qrRead)
+                    }
+                } else if (res.data.key == "verify-qr") {
+                    toast({ title: res.message, variant: "default"})
+                    setTiketScanned(res.data.data.tiket)
+                }
+            }
         }
     }, [scanFetcher.data])
     return (
@@ -148,16 +244,54 @@ export default function DashboardEventDetailPage() {
                                 <span className="sr-only">Edit</span>
                             </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <BarcodeScanner className="min-h-72 mb-10" onScan={(scan) => scan && handlingQRRead(scan)} />
-                            {scanFetcher.state == "loading" ? "Loading" : ""}
-                            <div className="flex items-center">
-                                <Switch id="redirect-to-tiket" checked={isRedirectToTiket} onCheckedChange={(checked) => setIsRedirectToTiket(checked)} />
-                                <Label htmlFor="redirect-to-tiket">Redirect To Tiket</Label>
+                        <AlertDialogContent className="max-w-7xl">
+                            <div className="grid grid-cols-12 gap-4">
+                                <div className="col-span-8">
+                                    {tiketScanned && <DashboardDetailTiketCard tiket={tiketScanned} />}
+                                </div>
+                                <Tabs className="space-y-4 col-span-4" defaultValue="barcode">
+                                    <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="barcode">Barcode</TabsTrigger>
+                                        <TabsTrigger value="qr">QR Code</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="barcode">
+                                        <div className="grid gap-2">
+                                            <div className="w-64 flex items-center">
+                                                {isBarcodeWithCamera ? <BarcodeScanner decoderOptions={{formats: ["code_128"]}} className="" onScan={(value) => {setBarcodeValue(value); handlingBarcodeRead(value)}} /> : <></>}
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <Switch id="with-camera" checked={isBarcodeWithCamera} onCheckedChange={(checked) => setIsBarcodeWithCamera(checked)} />
+                                                <Label htmlFor="with-camera">With Camera</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <Switch id="auto-verify" checked={isBarcodeAutoVerify} onCheckedChange={(checked) => setIsBarcodeAutoVerify(checked)} />
+                                                <Label htmlFor="auto-verify">Auto Verify</Label>
+                                            </div>
+                                            <scanFetcher.Form className="space-y-3" onSubmit={(e) => {
+                                                e.preventDefault()
+                                                handlingBarcodeRead(barcodeValue)
+                                            }}>
+                                                <Input id="value" name="value" value={barcodeValue} onChange={((e) => setBarcodeValue(e.target.value))} placeholder="XXXXXX-XXXXXX" />
+                                                <Button className="w-full">Verify</Button>
+                                            </scanFetcher.Form>
+                                        </div>
+                                    </TabsContent>
+                                    <TabsContent value="qr">
+                                        <div className="w-64 flex items-center">
+                                            <BarcodeScanner decoderOptions={{formats: ["qr_code", "rm_qr_code", "micro_qr_code"]}} className="" onScan={(scan) => scan && handlingQRVerify(scan)} />
+                                        </div>
+                                        {scanFetcher.state == "loading" ? "Loading" : ""}
+                                        <div className="flex items-center">
+                                            {/* <Switch id="redirect-to-tiket" checked={isRedirectToTiket} onCheckedChange={(checked) => setIsRedirectToTiket(checked)} /> */}
+                                            <Switch id="auto-verify-qr" checked={isQRAutoVerify} onCheckedChange={(checked) => setIsQRAutoVerify(checked)} />
+                                            <Label htmlFor="redirect-to-tiket">Redirect To Tiket</Label>
+                                        </div>
+                                    </TabsContent>
+                                </Tabs>
                             </div>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction>Continue</AlertDialogAction>
+                                <AlertDialogCancel>Close</AlertDialogCancel>
+                                {/* <AlertDialogAction>Continue</AlertDialogAction> */}
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
@@ -167,16 +301,17 @@ export default function DashboardEventDetailPage() {
                     </Button>
                 </div>
             </div>
-            <Tabs className="space-y-4" defaultValue="details" value={routeName == "_index" ? "details" : routeName}>
+            {data.error ? <>Error : {data.message}</> : <Tabs className="space-y-4" defaultValue="details" value={routeName == "_index" ? "details" : routeName}>
                 <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="details" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}`}>Details</NavLink></TabsTrigger>
-                    <TabsTrigger value="jenistiket" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/jenistiket`}>Jenis Tiket</NavLink></TabsTrigger>
-                    <TabsTrigger value="tiket" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/tiket`}>Tiket</NavLink></TabsTrigger>
-                    <TabsTrigger value="paymenttransaction" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/paymenttransaction`}>Payment Transaction</NavLink></TabsTrigger>
-                    <TabsTrigger value="deskripsi" asChild><NavLink to={`/dashboard/event/${eventRes?.uuid}/deskripsi`}>Deskripsi</NavLink></TabsTrigger>
+                    <TabsTrigger value="details" asChild><NavLink to={`/dashboard/event/${data.data.event.uuid}`}>Details</NavLink></TabsTrigger>
+                    <TabsTrigger value="jenistiket" asChild><NavLink to={`/dashboard/event/${data.data.event.uuid}/jenistiket`}>Jenis Tiket</NavLink></TabsTrigger>
+                    <TabsTrigger value="tiket" asChild><NavLink to={`/dashboard/event/${data.data.event.uuid}/tiket`}>Tiket</NavLink></TabsTrigger>
+                    <TabsTrigger value="paymenttransaction" asChild><NavLink to={`/dashboard/event/${data.data.event.uuid}/paymenttransaction`}>Payment Transaction</NavLink></TabsTrigger>
+                    <TabsTrigger value="deskripsi" asChild><NavLink to={`/dashboard/event/${data.data.event.uuid}/deskripsi`}>Deskripsi</NavLink></TabsTrigger>
                 </TabsList>
-                {navigation.state == "loading" ? <h1>Loading</h1> : <Outlet context={dataContext} />}
-            </Tabs>
+                {navigation.state == "loading" ? <h1>Loading</h1> : <Outlet context={{eventRes: data.data.event, user: user}} />}
+            </Tabs>}
+            
         </main>
     )
 }

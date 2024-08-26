@@ -26,6 +26,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     try {
         const uuidTicket = params.uuid as string
         const res = await ticketService.getTiket({ uuid: uuidTicket, request: request })
+        const barcodeRes = await ticketService.generateTiketBarcode(uuidTicket, request)
         const qrRes = await ticketService.generateTiketQR(uuidTicket, request)
         if (res.status_code == 200) {
             const fetchClient = new FetchClient()
@@ -33,7 +34,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
             const paymentStatus = await paymentService.getPaymentTransactionPaymentGatewayStatus({uuidEvent: res.data?.paymentTransaction || ""}, request)
             const authToken = await getAuthToken(request)
             const base64 = await blobToBase64(qrRes)
-            return json({ error: false, message: res.message, data: {tiket: res.data, qrData: base64, paymentStatus: paymentStatus.data, tiketStatusUrl: tiketStatusUrl, authToken: authToken} })
+            const barcodeBase64 = await blobToBase64(barcodeRes)
+            return json({ error: false, message: res.message, data: {tiket: res.data, qrData: base64, barcodeData: barcodeBase64, paymentStatus: paymentStatus.data, tiketStatusUrl: tiketStatusUrl, authToken: authToken} })
         } else if(res.status_code == 401) {
             const session = await getAuthSession(request)
             return redirect("/login", {
@@ -55,6 +57,7 @@ export default function TiketPage() {
     const { toast } = useToast()
     const imgQRRef = useRef<HTMLImageElement | null>(null)
     const imgQrId = useId()
+    const imgBarcodeId = useId()
     const navigate = useNavigate()
     let revalidator = useRevalidator();
     let transactionStatus: {[key: string]: string} = {}
@@ -124,8 +127,8 @@ export default function TiketPage() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-            <div className="grid grid-cols-5 gap-6 mt-10">
-                <Card className="w-full col-span-4">
+            <div className="grid grid-cols-5 gap-6 mt-10 w-full">
+                <Card className="w-full col-span-3">
                     <CardHeader>
                         <div className="flex items-center space-x-3">
                             <CardTitle>{data?.tiket.event}</CardTitle>
@@ -136,63 +139,71 @@ export default function TiketPage() {
                         </div>
                         <CardDescription>{handleDate(data?.tiket.date)} - ({data?.tiket.waktu_awal} - {data?.tiket.waktu_akhir})</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Ticket Type</p>
-                                <p className="font-medium">{data?.tiket.jenisTiket}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Total</p>
-                                <p className="font-medium">Rp {data?.tiket.price}</p>
-                            </div>
-                        </div>
-                        <Separator className="my-4" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Lokasi</p>
-                                <p className="font-medium">{data?.tiket.lokasi}</p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Total</p>
-                                <p className="font-medium">{data?.tiket.statusVerifikasi ? "Terverifikasi" : "Belum Terverifikasi"}</p>
-                            </div>
-                        </div>
-                        <Separator className="my-4" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Payment Transaction</p>
-                                <div>
-                                    <Link className="font-medium" to={`/payment-transaction/${data?.tiket.paymentTransaction}`}>#{data?.tiket.paymentTransaction}</Link>
+                    <CardContent className="flex flex-row">
+                        <div className="w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Ticket Type</p>
+                                    <p className="font-medium">{data?.tiket.jenisTiket}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Total</p>
+                                    <p className="font-medium">Rp {data?.tiket.price}</p>
                                 </div>
                             </div>
-                            {("transaction_time" in transactionStatus) ? (
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Transaction Time</p>
-                                <p className="font-medium">{handleDateTime(transactionStatus.transaction_time)}</p>
+                            <Separator className="my-4" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Lokasi</p>
+                                    <p className="font-medium">{data?.tiket.lokasi}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Total</p>
+                                    <p className="font-medium">{data?.tiket.statusVerifikasi ? "Terverifikasi" : "Belum Terverifikasi"}</p>
+                                </div>
                             </div>
-                            ): <></>}
+                            <Separator className="my-4" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Payment Transaction</p>
+                                    <div>
+                                        <Link className="font-medium" to={`/payment-transaction/${data?.tiket.paymentTransaction}`}>#{data?.tiket.paymentTransaction}</Link>
+                                    </div>
+                                </div>
+                                {("transaction_time" in transactionStatus) ? (
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Transaction Time</p>
+                                    <p className="font-medium">{handleDateTime(transactionStatus.transaction_time)}</p>
+                                </div>
+                                ): <></>}
+                            </div>
+                            <Separator className="my-4" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {("transaction_status" in transactionStatus) ? (
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Transaction Status</p>
+                                    <p className="font-medium">{transactionStatus.transaction_status}</p>
+                                </div>
+                                ): <></>}
+                                {("payment_type" in transactionStatus) ? (
+                                <div className="space-y-1">
+                                    <p className="text-gray-500 dark:text-gray-400">Payment Type</p>
+                                    <p className="font-medium">{transactionStatus.payment_type}</p>
+                                </div>
+                                ): <></>}
+                            </div>
                         </div>
-                        <Separator className="my-4" />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {("transaction_status" in transactionStatus) ? (
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Transaction Status</p>
-                                <p className="font-medium">{transactionStatus.transaction_status}</p>
-                            </div>
-                            ): <></>}
-                            {("payment_type" in transactionStatus) ? (
-                            <div className="space-y-1">
-                                <p className="text-gray-500 dark:text-gray-400">Payment Type</p>
-                                <p className="font-medium">{transactionStatus.payment_type}</p>
-                            </div>
-                            ): <></>}
-                        </div>
+                        {/* <div>
+                            <img src={data.barcodeData} className="rotate-90 translate-y-24" id={imgBarcodeId} />
+                        </div> */}
                     </CardContent>
                     <CardFooter>
                     </CardFooter>
                 </Card>
-                <div className="">
+                <div className="space-y-3 col-span-2 flex flex-col items-center">
+                    <Card className="col-span-1 flex justify-center items-center p-3 w-full">
+                        <img src={data.barcodeData} id={imgBarcodeId} />
+                    </Card>
                     <Card className="w-64 h-64 col-span-1 flex justify-center items-center">
                         <img src={data.qrData} id={imgQrId} />
                     </Card>
